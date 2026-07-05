@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/29676769/README.md)
 # Demon Tower — Server (Proof of Concept)
 
 ฐานราก server-authoritative: Account/Login + persistent character state + ตัวอย่าง
@@ -100,6 +101,18 @@ socketB.emit('pvp_select_card', { cardIndex: 1 });
 - ช่องอาวุธพิเศษ (godly weapon ultimate effects) — ยังไม่พอร์ต ใช้แค่การ์ดในมือ 3 ใบ
 - ระบบสร้าง/แก้เด็คจริง — ใช้ debug endpoint แทนไปก่อน
 - Reconnect กลางแมทช์ — ถ้าใครหลุดกลางดวล อีกฝั่งจะได้ `pvp_end` ทันที (ไม่มี grace period)
+
+## ตั้งค่า Google Login
+
+1. ไปที่ https://console.cloud.google.com/apis/credentials
+2. สร้างโปรเจกต์ใหม่ (ถ้ายังไม่มี) → กด **"Create Credentials" → "OAuth client ID"**
+3. เลือก Application type: **Web application**
+4. ที่ "Authorized JavaScript origins" ใส่ URL ที่จะใช้เปิดไฟล์เกม เช่น `http://localhost` หรือถ้าใช้ GitHub Pages ก็ใส่ URL นั้น (Google Sign-In ต้องรันจาก URL จริง เปิดไฟล์ตรง ๆ จาก `file://` จะใช้ไม่ได้)
+5. จะได้ **Client ID** ลงท้ายด้วย `.apps.googleusercontent.com`
+6. เอา Client ID นี้ไปแทนที่ `GOOGLE_CLIENT_ID` ในไฟล์ `client-index.html`
+7. ที่ server ให้เพิ่ม environment variable `GOOGLE_CLIENT_ID` ด้วย (ค่าเดียวกัน) ใน Railway Variables
+
+**ข้อจำกัด:** เพราะ Google Sign-In ต้องรันจาก URL จริง (ไม่ใช่ไฟล์ในเครื่อง) เกมต้องถูกโฮสต์ไว้ที่ไหนสักที่ (เช่น GitHub Pages, Netlify, Vercel) ก่อนปุ่ม Google Login จะใช้งานได้จริง — ระบบ username/password แบบเดิมยังใช้ได้จากไฟล์ในเครื่องตามปกติ
 
 ## ขั้นต่อไป
 
