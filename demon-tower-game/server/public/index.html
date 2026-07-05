@@ -9,6 +9,7 @@
 <link id="manifest-link" rel="manifest" href="">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --bg-void:#0b0710; --bg-panel:#161022; --bg-panel2:#1e1730; --line:#352a4a;
@@ -447,14 +448,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
     <button class="btn" onclick="UI.goto('multiplayer-lobby')">🌐 มัลติเพลเยอร์ (P2P)</button>
     <button class="btn gold" onclick="UI.goto('server-login')">🔐 เข้าสู่ระบบเซิร์ฟเวอร์กลาง (ใหม่)</button>
     <button class="btn ghost" id="btn-install-pwa" style="display:none;" onclick="PWA.promptInstall()">📲 ติดตั้งเป็นแอป (Add to Home Screen)</button>
-    <div class="divider"></div>
-    <div class="btn-row">
-      <button class="btn small" onclick="SaveSystem.exportSave()">⬇️ Export Save</button>
-      <label class="btn small" style="text-align:center;">⬆️ Import Save
-        <input type="file" accept=".json" style="display:none" onchange="SaveSystem.importSave(event)">
-      </label>
-    </div>
-    <p class="small-text center" style="margin-top:18px;">v2.0 — PWA-ready · ทำงานออฟไลน์ได้ทั้งหมด ไม่มีเซิร์ฟเวอร์กลาง</p>
+    <p class="small-text center" style="margin-top:18px;">v2.1 — ล็อกอินเซิร์ฟเวอร์กลางเพื่อเล่น PvP ข้ามเครื่องได้จริง</p>
   </div>
 
   <!-- ============ CHARACTER CREATION ============ -->
@@ -473,6 +467,9 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
     <div class="topbar"><span class="back" onclick="UI.goto('title')">←</span><span class="title">เซิร์ฟเวอร์กลาง</span><span></span></div>
     <div style="padding:14px 2px;">
       <p class="small-text" id="server-login-status">กำลังเชื่อมต่อเซิร์ฟเวอร์...</p>
+      <div id="google-signin-btn" style="margin:10px 0;"></div>
+      <div class="divider"></div>
+      <p class="small-text center">หรือใช้ชื่อผู้ใช้/รหัสผ่าน</p>
       <input type="text" id="input-server-username" placeholder="ชื่อผู้ใช้ (>=3 ตัวอักษร)" maxlength="16">
       <input type="password" id="input-server-password" placeholder="รหัสผ่าน (>=6 ตัวอักษร)" maxlength="64">
       <div class="btn-row">
@@ -1646,29 +1643,6 @@ const Game = {
     const pending = this.state.pendingBoss; this.state.pendingBoss = null;
     if(pending) Combat.afterBossAllocation(pending);
     Render.hub();
-  }
-};
-
-const SaveSystem = {
-  exportSave(){
-    const data = {};
-    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith('demonTower')) data[k]=localStorage.getItem(k); }
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'demon-tower-save.json'; a.click();
-    Toast.show('บันทึกไฟล์ Save เรียบร้อย');
-  },
-  importSave(evt){
-    const file = evt.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e=>{
-      try{
-        const data = JSON.parse(e.target.result);
-        Object.keys(data).forEach(k=>localStorage.setItem(k, data[k]));
-        Toast.show('นำเข้า Save สำเร็จ กำลังโหลดใหม่...');
-        setTimeout(()=>location.reload(), 900);
-      }catch(err){ Toast.show('ไฟล์ Save ไม่ถูกต้อง'); }
-    };
-    reader.readAsText(file);
   }
 };
 
@@ -4023,7 +3997,10 @@ const Net = {
 /* ---------------------------------- SERVER-AUTHORITATIVE BACKEND ---------------------------------- */
 // ตั้งค่านี้เป็น URL ของ server ที่รันจาก demon-tower-server/ (ดู README ของ server)
 // ตอนทดสอบในเครื่องตัวเองใช้ http://localhost:3000 ได้เลย ตอน deploy จริงเปลี่ยนเป็น URL จริง
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'https://onlonetower-production.up.railway.app';
+// ต้องไปสร้าง OAuth Client ID ที่ https://console.cloud.google.com/apis/credentials เลือก "Web application"
+// แล้วเอา Client ID (ลงท้ายด้วย .apps.googleusercontent.com) มาแทนค่านี้ — ดูขั้นตอนละเอียดใน README
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
 const ServerAuth = {
   socket:null, token:null, username:null,
@@ -4032,6 +4009,29 @@ const ServerAuth = {
     this.username = localStorage.getItem('dt_username');
     this._refreshLoginScreen();
     if(this.token) this._connectSocket();
+    this._initGoogleButton();
+  },
+  _initGoogleButton(){
+    if(typeof google === 'undefined' || !google.accounts){
+      // สคริปต์ Google ยังโหลดไม่เสร็จ (async) — ลองใหม่อีกครั้งสักครู่
+      setTimeout(()=>this._initGoogleButton(), 400);
+      return;
+    }
+    if(GOOGLE_CLIENT_ID.startsWith('YOUR_')){
+      document.getElementById('google-signin-btn').innerHTML = '<p class="small-text" style="color:var(--bad);">⚠️ ยังไม่ได้ตั้งค่า Google Client ID (ดู README)</p>';
+      return;
+    }
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: (resp)=>this._onGoogleCredential(resp) });
+    google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme:'filled_black', size:'large', shape:'pill', width:280 });
+  },
+  async _onGoogleCredential(response){
+    try{
+      const res = await fetch(SERVER_URL+'/api/auth/google', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({idToken:response.credential})});
+      const data = await res.json();
+      if(!res.ok) return Toast.show('❌ '+(data.error||'ล็อกอิน Google ไม่สำเร็จ'));
+      this._onAuthed(data.token, data.username);
+      Toast.show('✅ เข้าสู่ระบบด้วย Google สำเร็จ');
+    }catch(e){ Toast.show('❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: '+e.message); }
   },
   async register(){
     const username = document.getElementById('input-server-username').value.trim();
