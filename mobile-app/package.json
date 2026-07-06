@@ -1,0 +1,18 @@
+{
+  "name": "demon-tower-mobile",
+  "version": "1.0.0",
+  "description": "Mobile app wrapper (iOS/Android) for หอคอยปีศาจ | Demon Tower, powered by Capacitor",
+  "scripts": {
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/cli": "^6.1.2"
+  }
+}
