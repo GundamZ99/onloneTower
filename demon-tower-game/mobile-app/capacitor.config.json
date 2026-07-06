@@ -1,0 +1,13 @@
+{
+  "appId": "com.onlonetower.demontower",
+  "appName": "หอคอยปีศาจ Demon Tower",
+  "webDir": "www",
+  "server": {
+    "url": "https://onlonetower-production.up.railway.app",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
