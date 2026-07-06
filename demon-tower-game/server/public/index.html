@@ -667,7 +667,10 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <button class="btn" id="btn-nav-inventory" onclick="UI.goto('inventory-screen')">🎒 กระเป๋าและอุปกรณ์</button>
       <button class="btn ghost" id="btn-nav-friends" onclick="UI.goto('friends-screen')">👥 เพื่อน / ชวนเข้าปาร์ตี้</button>
       <button class="btn ghost" id="btn-nav-party" onclick="UI.goto('multiplayer-lobby')">📡 สถานะปาร์ตี้ปัจจุบัน</button>
-      <button class="btn gold" id="btn-open-daily-login" onclick="DailyLogin.open()">📅 ล็อกอินรายวัน <span id="hub-daily-badge" style="display:none;color:#ff5a5a;">●</span></button>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn gold" id="btn-open-daily-login" onclick="DailyLogin.open()" style="flex:1;width:auto;margin:0;font-size:13px;padding:10px 6px;">📅 รายวัน <span id="hub-daily-badge" style="display:none;color:#ff5a5a;">●</span></button>
+        <button class="btn ghost" id="btn-hub-logout" onclick="ServerAuth.logoutFromHub()" style="flex:1;width:auto;margin:0;font-size:13px;padding:10px 6px;color:var(--bad);border-color:rgba(255,90,110,.35);">🚪 ออกจากระบบ</button>
+      </div>
     </div>
   </div>
 
@@ -4443,8 +4446,22 @@ const ServerAuth = {
     localStorage.removeItem('dt_token'); localStorage.removeItem('dt_username');
     this._refreshLoginScreen();
     this._refreshTitleScreen();
-    document.getElementById('server-login-status').textContent = 'ออกจากระบบแล้ว';
-    document.getElementById('btn-server-friends').style.display = 'none';
+    const statusEl = document.getElementById('server-login-status');
+    if(statusEl) statusEl.textContent = 'ออกจากระบบแล้ว';
+    const friendsBtn = document.getElementById('btn-server-friends');
+    if(friendsBtn) friendsBtn.style.display = 'none';
+    const tb = document.getElementById('tabbar');
+    if(tb) tb.style.display = 'none';
+  },
+  /* Logout triggered from inside the Hub (in-game), where the player still has
+     an active character on screen — confirm first so a stray tap can't kick
+     them out mid-session, then drop back to the title screen. */
+  async logoutFromHub(){
+    const ok = await ConfirmDialog.ask('ต้องการออกจากระบบใช่หรือไม่? ตัวละครของคุณจะยังถูกบันทึกไว้ในเครื่องนี้ สามารถล็อกอินกลับเข้ามาเล่นต่อได้ทุกเมื่อ');
+    if(!ok) return;
+    this.logout();
+    Toast.show('🚪 ออกจากระบบแล้ว');
+    UI.goto('title');
   },
   _connectSocket(){
     if(typeof io === 'undefined'){ Toast.show('ไม่สามารถโหลดไลบรารี Socket.io ได้'); return; }
