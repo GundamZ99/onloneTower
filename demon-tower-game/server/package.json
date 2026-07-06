@@ -1,0 +1,18 @@
+{
+  "name": "demon-tower-server",
+  "version": "0.1.0",
+  "description": "Central server (Account/Login + persistent state) for หอคอยปีศาจ | Demon Tower",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.5"
+  }
+}
