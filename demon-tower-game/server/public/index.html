@@ -1974,6 +1974,8 @@ const Tutorial = {
     clearInterval(this._targetPoll);
     document.getElementById('tutorial-spotlight').style.display = 'none';
     document.getElementById('tutorial-tooltip').style.display = 'none';
+    const startedAt = Date.now();
+    const TIMEOUT_MS = 5000; // safety net: never poll forever
     this._targetPoll = setInterval(()=>{
       const el = document.querySelector(selector);
       if(el && el.getClientRects().length > 0){
@@ -1984,6 +1986,14 @@ const Tutorial = {
         this._positionSpotlight(el);
         clearInterval(this._posPoll);
         this._posPoll = setInterval(()=>this._positionSpotlight(el), 300);
+        return;
+      }
+      if(Date.now() - startedAt > TIMEOUT_MS){
+        // Target never appeared (missing/renamed selector, render race, etc).
+        // Bail out of the tutorial instead of silently blocking every click forever.
+        clearInterval(this._targetPoll);
+        console.warn('[Tutorial] target not found for selector, aborting tutorial:', selector);
+        this.finish();
       }
     }, 150);
   },
