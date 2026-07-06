@@ -12,6 +12,7 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { Server } = require('socket.io');
@@ -25,6 +26,10 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ---------- Static files: เปิดหน้าเกมจากโฟลเดอร์ server/public ----------
+// เข้า URL หลักของ Railway แล้วต้องได้หน้าเกม (public/index.html) กลับไป
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ---------- password hashing ----------
 // เหลือไว้เผื่ออนาคตอยากเปิดระบบรหัสผ่านอีกครั้ง แต่ไม่มี endpoint ใดเรียกใช้แล้วตอนนี้
@@ -186,6 +191,11 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => {
+// ---------- Web entry: เปิดหน้าเกมเมื่อเข้า URL หลัก ----------
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Demon Tower server listening on :${PORT}`);
 });
