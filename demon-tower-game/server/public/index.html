@@ -1450,22 +1450,22 @@ const SKILL_LIBRARY = [
   { id:"fire_01", name:"ลูกไฟพื้นฐาน", element:"fire", basePower:10, effects:[], description:"ทำดาเมจ 10 หน่วย" },
   { id:"fire_02", name:"หมัดอัคคี", element:"fire", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
   { id:"fire_03", name:"กำแพงเพลิง", element:"fire", basePower:12, effects:[{type:"block",value:5}], description:"ทำดาเมจ 12 หน่วย และบล็อกดาเมจครั้งต่อไปของศัตรู 5 หน่วย" },
-  { id:"fire_04", name:"ระเบิดเพลิง", element:"fire", basePower:14, effects:[{type:"debuff_atk",value:5,duration:1,target:"self"}], description:"ทำดาเมจ 25 หน่วย แต่เทิร์นต่อไปเราจะโจมตีเบาลง 5 หน่วย" },
-  { id:"fire_05", name:"เพลิงผลาญ", element:"fire", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
-  { id:"fire_06", name:"ดาบอัคคีอนันต์", element:"fire", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
+  { id:"fire_04", name:"ระเบิดเพลิง", element:"fire", basePower:25, effects:[{type:"debuff_atk",value:5,duration:1,target:"self"}], description:"ทำดาเมจ 25 หน่วย แต่เทิร์นต่อไปเราจะโจมตีเบาลง 5 หน่วย" },
+  { id:"fire_05", name:"เพลิงผลาญ", element:"fire", basePower:18, effects:[], description:"ทำดาเมจ 18 หน่วย" },
+  { id:"fire_06", name:"ดาบอัคคีอนันต์", element:"fire", basePower:20, effects:[], description:"ทำดาเมจ 20 หน่วย" },
   { id:"fire_07", name:"สะเก็ดไฟซัด", element:"fire", basePower:5, effects:[{type:"multi_hit",count:3}], description:"ทำดาเมจ 5 หน่วย 3 ครั้งซ้อน (รวม 15 หน่วย)" },
   { id:"fire_08", name:"คลื่นความร้อน", element:"fire", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
   { id:"fire_09", name:"ไฟป่า", element:"fire", basePower:10, effects:[{type:"scaling_turn",values:[10,15,20]}], description:"ทำดาเมจเพิ่มขึ้นตามจำนวนเทิร์นที่สู้" },
-  { id:"fire_10", name:"เพลิงพิโรธ", element:"fire", basePower:15, effects:[{type:"self_damage",value:10}], description:"ทำดาเมจ 30 หน่วย แต่ต้องแลกด้วยการลด HP ตัวเอง 10 หน่วย" },
-  { id:"fire_11", name:"ลูกบอลลาวา", element:"fire", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
+  { id:"fire_10", name:"เพลิงพิโรธ", element:"fire", basePower:30, effects:[{type:"self_damage",value:10}], description:"ทำดาเมจ 30 หน่วย แต่ต้องแลกด้วยการลด HP ตัวเอง 10 หน่วย" },
+  { id:"fire_11", name:"ลูกบอลลาวา", element:"fire", basePower:22, effects:[], description:"ทำดาเมจ 22 หน่วย" },
   { id:"fire_12", name:"ประกายไฟลวงตา", element:"fire", basePower:10, effects:[{type:"debuff_atk",value:100,duration:1,mode:"miss",target:"enemy"}], description:"ทำดาเมจ 10 หน่วย และทำให้ศัตรูโจมตีพลาดในเทิร์นถัดไป" },
-  { id:"fire_13", name:"เสาไฟนรก", element:"fire", basePower:15, effects:[{type:"once_per_fight"}], description:"ทำดาเมจ 35 หน่วย (ใช้ได้ครั้งเดียวต่อการต่อสู้)" },
+  { id:"fire_13", name:"เสาไฟนรก", element:"fire", basePower:35, effects:[{type:"once_per_fight"}], description:"ทำดาเมจ 35 หน่วย (ใช้ได้ครั้งเดียวต่อการต่อสู้)" },
   { id:"fire_14", name:"ไฟสลัว", element:"fire", basePower:5, effects:[{type:"lifesteal",value:5}], description:"ทำดาเมจเบา 5 หน่วย แต่ขโมย HP ศัตรูมาเพิ่มให้ตัวเอง 5 หน่วย" },
   { id:"fire_15", name:"เกราะไฟสะท้อน", element:"fire", basePower:0, effects:[{type:"reflect",value:15,duration:1}], description:"ในเทิร์นนี้ ถ้าศัตรูตีเรามา จะโดนดาเมจสะท้อนกลับไป 15 หน่วย" },
-  { id:"fire_16", name:"มังกรเพลิงโบราณ", element:"fire", basePower:15, effects:[{type:"charge",turns:1}], description:"ทำดาเมจยับๆ 40 หน่วย แต่ต้องชาร์จพลัง 1 เทิร์น" },
+  { id:"fire_16", name:"มังกรเพลิงโบราณ", element:"fire", basePower:40, effects:[{type:"charge",turns:1}], description:"ทำดาเมจยับๆ 40 หน่วย แต่ต้องชาร์จพลัง 1 เทิร์น" },
   { id:"fire_17", name:"หมอกควันไฟ", element:"fire", basePower:12, effects:[{type:"debuff_atk",value:5,duration:1,target:"enemy"}], description:"ทำดาเมจ 12 หน่วย และทำให้ศัตรูโจมตีเบาลง 5 หน่วยในเทิร์นถัดไป" },
-  { id:"fire_18", name:"ลูกไฟยักษ์", element:"fire", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
-  { id:"fire_19", name:"ศรเพลิงทะลวง", element:"fire", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
+  { id:"fire_18", name:"ลูกไฟยักษ์", element:"fire", basePower:28, effects:[], description:"ทำดาเมจ 28 หน่วย" },
+  { id:"fire_19", name:"ศรเพลิงทะลวง", element:"fire", basePower:16, effects:[], description:"ทำดาเมจ 16 หน่วย" },
   { id:"fire_20", name:"เปลวเพลิงไร้สิ้นสุด", element:"fire", basePower:45, effects:[{type:"guarantee_hit",duration:1}], description:"ทำดาเมจหนักหน่วง 45 หน่วย และการันตีว่าท่าโจมตีในเทิร์นถัดไปจะเข้าเป้า 100%" },
 
   /* ---- ธาตุไม้ ---- */
@@ -1479,34 +1479,34 @@ const SKILL_LIBRARY = [
   { id:"wood_08", name:"ผลไม้แห่งชีวิต", element:"wood", basePower:0, effects:[{type:"heal",value:30}], description:"ฟื้นฟู HP ตัวเองทันที 30 หน่วย" },
   { id:"wood_09", name:"สวนป่าหนาม", element:"wood", basePower:0, effects:[{type:"reflect",value:10,duration:3}], description:"ทำดาเมจสะท้อนใส่ศัตรู 10 หน่วยทุกครั้งที่เราโดนตี (อยู่ได้ 3 เทิร์น)" },
   { id:"wood_10", name:"สปอร์เร่งโต", element:"wood", basePower:5, effects:[{type:"buff_next_heal",multiplier:2,duration:1}], description:"ทำดาเมจ 5 หน่วย และการันตีว่าท่าฟื้นฟูเลือดในเทิร์นถัดไปจะเพิ่มเลือดแรงขึ้นเป็น 2 เท่า" },
-  { id:"wood_11", name:"พายุใบไม้คลั่ง", element:"wood", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"wood_11", name:"พายุใบไม้คลั่ง", element:"wood", basePower:24, effects:[], description:"ทำดาเมจ 24 หน่วย" },
   { id:"wood_12", name:"ยางไม้เหนียวหนืด", element:"wood", basePower:0, effects:[{type:"guarantee_hit",duration:1}], description:"ไม่ทำดาเมจ แต่การันตีล็อกเป้าหมายให้เราจะโจมตีโดนแน่นอนในเทิร์นหน้า" },
   { id:"wood_13", name:"กิ่งไม้ฟาด", element:"wood", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
   { id:"wood_14", name:"ฟื้นฟูฉุกเฉิน", element:"wood", basePower:0, effects:[{type:"heal",value:40,condition:"hp_below_half",elseValue:10}], description:"หาก HP เราต่ำกว่าครึ่ง จะฟื้นฟู HP ทันที 40 หน่วย (ถ้าเลือดเยอะจะฟื้นแค่ 10)" },
   { id:"wood_15", name:"ค้อนไม้ซุง", element:"wood", basePower:26, effects:[], description:"ทำดาเมจหนัก 26 หน่วย" },
   { id:"wood_16", name:"ละอองเกสรช่วยชีวิต", element:"wood", basePower:0, effects:[{type:"survive_lethal",minHp:1}], description:"หากโดนโจมตีจน HP จะหมดในเทิร์นนี้ จะเหลือ HP ไว้ 1 หน่วยเสมอ" },
-  { id:"wood_17", name:"ผลึกพฤกษา", element:"wood", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
-  { id:"wood_18", name:"ช้างสารเหยียบป่า", element:"wood", basePower:8, effects:[{type:"heal",value:5}], description:"ทำดาเมจ 22 หน่วย และฟื้น HP ตัวเอง 5 หน่วย" },
+  { id:"wood_17", name:"ผลึกพฤกษา", element:"wood", basePower:18, effects:[], description:"ทำดาเมจ 18 หน่วย" },
+  { id:"wood_18", name:"ช้างสารเหยียบป่า", element:"wood", basePower:22, effects:[{type:"heal",value:5}], description:"ทำดาเมจ 22 หน่วย และฟื้น HP ตัวเอง 5 หน่วย" },
   { id:"wood_19", name:"เกราะใบไม้ผลิ", element:"wood", basePower:0, effects:[{type:"block",value:10},{type:"heal",value:15}], description:"บล็อกดาเมจ 10 หน่วย และฟื้น HP 15 หน่วย" },
   { id:"wood_20", name:"มหาพฤกษาเยียวยา", element:"wood", basePower:0, effects:[{type:"heal",value:45}], description:"ฟื้นฟู HP ตัวเองทันที 45 หน่วย" },
 
   /* ---- ธาตุน้ำ ---- */
   { id:"water_01", name:"กระสุนน้ำ", element:"water", basePower:9, effects:[], description:"ทำดาเมจ 9 หน่วย" },
   { id:"water_02", name:"ดาบวารี", element:"water", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
-  { id:"water_03", name:"เสาน้ำพุ", element:"water", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
+  { id:"water_03", name:"เสาน้ำพุ", element:"water", basePower:18, effects:[], description:"ทำดาเมจ 18 หน่วย" },
   { id:"water_04", name:"กระแสน้ำวน", element:"water", basePower:12, effects:[{type:"debuff_atk",setTo:0,duration:1,target:"enemy"}], description:"ทำดาเมจ 12 หน่วย และทำให้เทิร์นถัดไปของศัตรูทำดาเมจได้แค่ 0" },
   { id:"water_05", name:"กำแพงน้ำแข็ง", element:"water", basePower:0, effects:[{type:"block",value:"all",duration:1}], description:"บล็อกดาเมจทั้งหมดในเทิร์นนี้" },
-  { id:"water_06", name:"คลื่นยักษ์", element:"water", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
+  { id:"water_06", name:"คลื่นยักษ์", element:"water", basePower:22, effects:[], description:"ทำดาเมจ 22 หน่วย" },
   { id:"water_07", name:"หยดน้ำค้างฟื้นพลัง", element:"water", basePower:0, effects:[{type:"heal",value:15}], description:"ฟื้นฟู HP ตัวเอง 15 หน่วย" },
   { id:"water_08", name:"ไอน้ำพรางตา", element:"water", basePower:10, effects:[{type:"reflect",value:10}], description:"ทำให้ศัตรูโจมตีพลาดในเทิร์นนี้ และเราทำดาเมจสวนกลับ 10 หน่วย" },
   { id:"water_09", name:"หมัดเยือกแข็ง", element:"water", basePower:15, effects:[{type:"guarantee_hit",duration:1}], description:"ทำดาเมจ 15 หน่วย และการันตีว่าท่าต่อไปจะแช่แข็งบล็อกการ์ดของศัตรูได้สำเร็จ" },
-  { id:"water_10", name:"ฝนดาวตกน้ำแข็ง", element:"water", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"water_10", name:"ฝนดาวตกน้ำแข็ง", element:"water", basePower:25, effects:[], description:"ทำดาเมจ 25 หน่วย" },
   { id:"water_11", name:"สูบวารี", element:"water", basePower:13, effects:[{type:"lifesteal",value:13}], description:"ทำดาเมจ 13 หน่วย และขโมย HP ศัตรูมา 13 หน่วย" },
-  { id:"water_12", name:"กระสุนเจาะน้ำแข็ง", element:"water", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"water_12", name:"กระสุนเจาะน้ำแข็ง", element:"water", basePower:20, effects:[], description:"ทำดาเมจ 20 หน่วย" },
   { id:"water_13", name:"กระจกเงาวารี", element:"water", basePower:0, effects:[{type:"copy_last_enemy_card"}], description:"ก๊อปปี้ท่าล่าสุดที่ศัตรูใช้ เอามาโจมตีใส่ศัตรูแทน" },
-  { id:"water_14", name:"น้ำหลาก", element:"water", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"water_14", name:"น้ำหลาก", element:"water", basePower:16, effects:[], description:"ทำดาเมจ 16 หน่วย" },
   { id:"water_15", name:"ไอเย็นเยือก", element:"water", basePower:5, effects:[{type:"debuff_vulnerable",value:10,duration:1,target:"enemy"}], description:"ทำดาเมจ 5 หน่วย และทำให้ศัตรูโดนโจมตีแรงขึ้น 10 หน่วยในเทิร์นหน้า" },
-  { id:"water_16", name:"หอกน้ำแข็งน้ำลึก", element:"water", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"water_16", name:"หอกน้ำแข็งน้ำลึก", element:"water", basePower:27, effects:[], description:"ทำดาเมจ 27 หน่วย" },
   { id:"water_17", name:"น้ำท่วมจอ", element:"water", basePower:0, effects:[{type:"cleanse_enemy_buffs"}], description:"ล้างเอฟเฟกต์ป้องกันทั้งหมดของศัตรูทิ้งทันที" },
   { id:"water_18", name:"มังกรวารีขยายร่าง", element:"water", basePower:0, effects:[{type:"scale_with_current_hp"}], description:"ทำดาเมจเท่ากับจำนวน HP ที่เราเหลืออยู่" },
   { id:"water_19", name:"ฟองสบู่บาเรีย", element:"water", basePower:0, effects:[{type:"block",value:20}], description:"บล็อกดาเมจ 20 หน่วย" },
@@ -1516,42 +1516,42 @@ const SKILL_LIBRARY = [
   { id:"light_01", name:"ศรแสง", element:"light", basePower:10, effects:[], description:"ทำดาเมจ 10 หน่วย" },
   { id:"light_02", name:"ลำแสงศักดิ์สิทธิ์", element:"light", basePower:15, effects:[], description:"ทำดาเมจ 15 หน่วย" },
   { id:"light_03", name:"ประกายแสงตาพร่า", element:"light", basePower:8, effects:[{type:"debuff_atk",percent:50,duration:1,target:"enemy"}], description:"ทำดาเมจ 8 หน่วย และทำให้ศัตรูตีเบาลงครึ่งหนึ่งในเทิร์นถัดไป" },
-  { id:"light_04", name:"ลำแสงส่องหล้า", element:"light", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
+  { id:"light_04", name:"ลำแสงส่องหล้า", element:"light", basePower:20, effects:[], description:"ทำดาเมจ 20 หน่วย" },
   { id:"light_05", name:"พรแห่งแสง", element:"light", basePower:0, effects:[{type:"heal",value:25}], description:"ฟื้นฟู HP ตัวเอง 25 หน่วย" },
-  { id:"light_06", name:"ระเบิดแสงอาทิตย์", element:"light", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
-  { id:"light_07", name:"ค้อนพิพากษา", element:"light", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
+  { id:"light_06", name:"ระเบิดแสงอาทิตย์", element:"light", basePower:26, effects:[], description:"ทำดาเมจ 26 หน่วย" },
+  { id:"light_07", name:"ค้อนพิพากษา", element:"light", basePower:18, effects:[], description:"ทำดาเมจ 18 หน่วย" },
   { id:"light_08", name:"โล่สะท้อนแสง", element:"light", basePower:0, effects:[{type:"block",value:10},{type:"reflect",value:10}], description:"บล็อกดาเมจ 10 หน่วย และสะท้อนดาเมจคืนศัตรู 10 หน่วย" },
   { id:"light_09", name:"กางปีกสวรรค์", element:"light", basePower:0, effects:[{type:"heal",value:10},{type:"block",value:10}], description:"ฟื้นฟู HP 10 หน่วย และล็อกดาเมจ 10 หน่วยพร้อมกัน" },
   { id:"light_10", name:"แสงธรรมนำทาง", element:"light", basePower:0, effects:[{type:"dice_roll",min:1,max:6,multiplier:5}], description:"ทอยลูกเต๋า 1-6 ได้แต้มเท่าไหร่ คูณด้วย 5 เป็นดาเมจ" },
   { id:"light_11", name:"แสงละลายพฤติกรรม", element:"light", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
-  { id:"light_12", name:"ดาบเลเซอร์สวรรค์", element:"light", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"light_12", name:"ดาบเลเซอร์สวรรค์", element:"light", basePower:23, effects:[], description:"ทำดาเมจ 23 หน่วย" },
   { id:"light_13", name:"พลังใจอัศวิน", element:"light", basePower:0, effects:[{type:"buff_next_damage",value:15,duration:1}], description:"เพิ่มดาเมจให้ท่าต่อไปของเรา 15 หน่วย" },
   { id:"light_14", name:"ชำระล้างใจ", element:"light", basePower:12, effects:[{type:"cleanse_self_debuffs"}], description:"ทำดาเมจ 12 หน่วย และล้างผลลดพลังทั้งหมดของตัวเอง" },
   { id:"light_15", name:"หอกแสงสลับชีพ", element:"light", basePower:0, effects:[{type:"swap_hp_percent",condition:"low_hp_only"}], description:"แลกเปลี่ยนเปอร์เซ็นต์ HP ของเรากับศัตรู (ใช้ได้เมื่อเราใกล้ตายเท่านั้น)" },
   { id:"light_16", name:"คุกแสงนำทาง", element:"light", basePower:0, effects:[{type:"guarantee_hit",duration:2},{type:"buff_next_damage",value:10,duration:2}], description:"ไม่ทำดาเมจ แต่การันตีว่าใน 2 เทิร์นถัดไป ทุกท่าที่เราใช้จะสำเร็จและแรงขึ้น 10 หน่วย" },
-  { id:"light_17", name:"ดาวตกสวรรค์", element:"light", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"light_17", name:"ดาวตกสวรรค์", element:"light", basePower:30, effects:[], description:"ทำดาเมจ 30 หน่วย" },
   { id:"light_18", name:"แสงชุบชีวิต", element:"light", basePower:0, effects:[{type:"heal",value:50},{type:"once_per_fight",scope:"game"}], description:"ฟื้น HP ตัวเองทันที 50 หน่วย (ใช้ได้ครั้งเดียวต่อเกม)" },
-  { id:"light_19", name:"ศรแสงเจาะทะลวง", element:"light", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"light_19", name:"ศรแสงเจาะทะลวง", element:"light", basePower:19, effects:[], description:"ทำดาเมจ 19 หน่วย" },
   { id:"light_20", name:"ระเบิดแสงศักดิ์สิทธิ์", element:"light", basePower:40, effects:[], description:"ทำดาเมจหนักหน่วง 40 หน่วยใส่ศัตรู" },
 
   /* ---- ธาตุมืด ---- */
   { id:"dark_01", name:"กระสุนเงา", element:"dark", basePower:11, effects:[], description:"ทำดาเมจ 11 หน่วย" },
-  { id:"dark_02", name:"หมัดทมิฬ", element:"dark", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
+  { id:"dark_02", name:"หมัดทมิฬ", element:"dark", basePower:16, effects:[], description:"ทำดาเมจ 16 หน่วย" },
   { id:"dark_03", name:"หลุมดำกลืนกิน", element:"dark", basePower:12, effects:[{type:"heal",value:12}], description:"ทำดาเมจ 12 หน่วย และฟื้น HP ให้เรา 12 หน่วย" },
   { id:"dark_04", name:"พันธนาการแห่งความมืด", element:"dark", basePower:8, effects:[{type:"guarantee_hit",duration:1}], description:"ทำดาเมจ 8 หน่วย และการันตีว่าท่าถัดไปจะดึงเลือดศัตรูมาได้แน่นอน" },
-  { id:"dark_05", name:"สัญญายมทูต", element:"dark", basePower:12, effects:[{type:"self_damage",value:5}], description:"ลด HP ตัวเอง 5 หน่วย เพื่อทำดาเมจใส่ศัตรู 25 หน่วย" },
+  { id:"dark_05", name:"สัญญายมทูต", element:"dark", basePower:25, effects:[{type:"self_damage",value:5}], description:"ลด HP ตัวเอง 5 หน่วย เพื่อทำดาเมจใส่ศัตรู 25 หน่วย" },
   { id:"dark_06", name:"หมอกรัตติกาล", element:"dark", basePower:0, effects:[{type:"debuff_atk",setTo:5,duration:1,target:"enemy"}], description:"ในเทิร์นถัดไป ศัตรูจะทำดาเมจใส่เราได้แค่ 5 หน่วยเท่านั้น" },
-  { id:"dark_07", name:"เคียวเกี่ยววิญญาณ", element:"dark", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
+  { id:"dark_07", name:"เคียวเกี่ยววิญญาณ", element:"dark", basePower:20, effects:[], description:"ทำดาเมจ 20 หน่วย" },
   { id:"dark_08", name:"ระเบิดวิญญาณ", element:"dark", basePower:0, effects:[{type:"scale_with_hp_lost"}], description:"ทำดาเมจตามจำนวน HP ที่เราเสียไป" },
   { id:"dark_09", name:"คำสาปหมายเลข 13", element:"dark", basePower:0, effects:[{type:"dice_gamble",threshold:3,successDamage:30,failSelfDamage:10}], description:"ทอยลูกเต๋า หากได้แต้มมากกว่า 3 ทำดาเมจ 30 หน่วย (ถ้าได้น้อยกว่า จะโดนดาเมจเอง 10 หน่วย)" },
-  { id:"dark_10", name:"กรงเล็บปีศาจ", element:"dark", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"dark_10", name:"กรงเล็บปีศาจ", element:"dark", basePower:22, effects:[], description:"ทำดาเมจ 22 หน่วย" },
   { id:"dark_11", name:"เงาเขมือบตับ", element:"dark", basePower:15, effects:[{type:"lifesteal",value:5}], description:"ทำดาเมจ 15 หน่วย และขโมยพลังโจมตีศัตรูมาเพิ่มให้ตัวเอง 5 หน่วย" },
   { id:"dark_12", name:"กลืนน้ำลายตัวเอง", element:"dark", basePower:15, effects:[{type:"true_damage"}], description:"ลด HP ศัตรูทันที 15 หน่วยแบบไม่สนเงื่อนไขใดๆ" },
   { id:"dark_13", name:"เกราะเงาทมิฬ", element:"dark", basePower:0, effects:[{type:"block",value:12}], description:"บล็อกดาเมจครั้งต่อไป 12 หน่วย" },
   { id:"dark_14", name:"พิธีกรรมสีเลือด", element:"dark", basePower:0, effects:[{type:"heal",value:35},{type:"debuff_atk",percent:50,duration:1,target:"self"}], description:"ฟื้นฟู HP 35 หน่วย แต่เทิร์นต่อไปเราจะทำดาเมจได้แค่ครึ่งเดียว" },
-  { id:"dark_15", name:"ลำแสงเนกาทีฟ", element:"dark", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"dark_15", name:"ลำแสงเนกาทีฟ", element:"dark", basePower:24, effects:[], description:"ทำดาเมจ 24 หน่วย" },
   { id:"dark_16", name:"วิญญาณตามหลอน", element:"dark", basePower:10, effects:[{type:"dot",value:10,duration:"fight"}], description:"ทำดาเมจ 10 หน่วยสม่ำเสมอในทุกๆ เทิร์น (ผลอยู่ถาวรจนจบการต่อสู้)" },
-  { id:"dark_17", name:"ดาบพิฆาตวิญญาณ", element:"dark", basePower:13, effects:[], description:"ทำดาเมจ 13 หน่วย" },
+  { id:"dark_17", name:"ดาบพิฆาตวิญญาณ", element:"dark", basePower:28, effects:[], description:"ทำดาเมจ 28 หน่วย" },
   { id:"dark_18", name:"อัญเชิญปิศาจเงา", element:"dark", basePower:14, effects:[{type:"multi_hit",count:2}], description:"ทำดาเมจ 14 หน่วย 2 ครั้งซ้อน (รวม 28 หน่วย)" },
   { id:"dark_19", name:"คำสาปสิ้นหวัง", element:"dark", basePower:10, effects:[{type:"guarantee_max_dice",duration:1}], description:"ทำดาเมจ 10 หน่วย และการันตีทอยเต๋าได้แต้มสูงสุดในเทิร์นหน้า" },
   { id:"dark_20", name:"กลืนกินความมืด", element:"dark", basePower:35, effects:[{type:"lifesteal",value:15}], description:"ทำดาเมจ 35 หน่วย และดูด HP ศัตรูมาเพิ่มให้เรา 15 หน่วย" },
@@ -1559,22 +1559,22 @@ const SKILL_LIBRARY = [
   /* ---- ธาตุกายภาพ ---- */
   { id:"physical_01", name:"ต่อยพื้นฐาน", element:"physical", basePower:12, effects:[], description:"ทำดาเมจ 12 หน่วย" },
   { id:"physical_02", name:"เตะตัดขา", element:"physical", basePower:14, effects:[], description:"ทำดาเมจ 14 หน่วย" },
-  { id:"physical_03", name:"ทุบสองมือ", element:"physical", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"physical_03", name:"ทุบสองมือ", element:"physical", basePower:18, effects:[], description:"ทำดาเมจ 18 หน่วย" },
   { id:"physical_04", name:"โล่กระแทก", element:"physical", basePower:10, effects:[{type:"guarantee_hit",duration:1}], description:"ทำดาเมจ 10 หน่วย และการันตีว่าท่าถัดไปจะทุบทะลุการป้องกันของศัตรูได้ 100%" },
-  { id:"physical_05", name:"ฟันดาบใหญ่", element:"physical", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"physical_05", name:"ฟันดาบใหญ่", element:"physical", basePower:22, effects:[], description:"ทำดาเมจ 22 หน่วย" },
   { id:"physical_06", name:"ยกการ์ดตั้งรับ", element:"physical", basePower:0, effects:[{type:"block",value:15}], description:"บล็อกดาเมจที่จะได้รับในเทิร์นนี้ 15 หน่วย" },
   { id:"physical_07", name:"หมัดฮุกซ้ายหน้าสั่น", element:"physical", basePower:15, effects:[{type:"debuff_atk",value:5,duration:1,target:"enemy"}], description:"ทำดาเมจ 15 หน่วย และทำให้ศัตรูโจมตีเบาลง 5 หน่วยในเทิร์นหน้า" },
-  { id:"physical_08", name:"กระโดดถีบ", element:"physical", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
-  { id:"physical_09", name:"ปาหินยักษ์", element:"physical", basePower:8, effects:[], description:"ทำดาเมจ 8 หน่วย" },
+  { id:"physical_08", name:"กระโดดถีบ", element:"physical", basePower:20, effects:[], description:"ทำดาเมจ 20 หน่วย" },
+  { id:"physical_09", name:"ปาหินยักษ์", element:"physical", basePower:25, effects:[], description:"ทำดาเมจ 25 หน่วย" },
   { id:"physical_10", name:"บ้าพลังคลั่ง", element:"physical", basePower:0, effects:[{type:"buff_next_damage",value:10,duration:2,includeSelf:true}], description:"ดาเมจในเทิร์นนี้และเทิร์นต่อไปของเราเพิ่มขึ้นท่าละ 10 หน่วย" },
   { id:"physical_11", name:"รัวหมัดชุดใหญ่", element:"physical", basePower:6, effects:[{type:"multi_hit",count:4}], description:"ทำดาเมจ 6 หน่วย 4 ครั้งซ้อน (รวม 24 หน่วย)" },
   { id:"physical_12", name:"หัวโขกวัดใจ", element:"physical", basePower:15, effects:[{type:"self_damage",value:5}], description:"ทำดาเมจ 15 หน่วย และตัวเราเองจะโดนดาเมจสะท้อนกลับมา 5 หน่วย" },
-  { id:"physical_13", name:"ฟันดาบคู่", element:"physical", basePower:9, effects:[], description:"ทำดาเมจ 9 หน่วย" },
+  { id:"physical_13", name:"ฟันดาบคู่", element:"physical", basePower:17, effects:[], description:"ทำดาเมจ 17 หน่วย" },
   { id:"physical_14", name:"ก้าวหลบแล้วสวน", element:"physical", basePower:12, effects:[{type:"block",value:"all",duration:1},{type:"reflect",value:12}], description:"บล็อกดาเมจในเทิร์นนี้ทั้งหมด และสวนกลับด้วยดาเมจ 12 หน่วย" },
-  { id:"physical_15", name:"แทงหอกทะลวง", element:"physical", basePower:9, effects:[], description:"ทำดาเมจ 9 หน่วย" },
-  { id:"physical_16", name:"ขวานจามหัว", element:"physical", basePower:9, effects:[], description:"ทำดาเมจหนัก 9 หน่วย" },
+  { id:"physical_15", name:"แทงหอกทะลวง", element:"physical", basePower:21, effects:[], description:"ทำดาเมจ 21 หน่วย" },
+  { id:"physical_16", name:"ขวานจามหัว", element:"physical", basePower:30, effects:[], description:"ทำดาเมจหนัก 30 หน่วย" },
   { id:"physical_17", name:"ฮึดสู้ต้านทาน", element:"physical", basePower:0, effects:[{type:"heal",value:15},{type:"block",value:15}], description:"ฟื้นฟู HP 15 หน่วย และล็อกดาเมจครั้งต่อไป 15 หน่วย" },
-  { id:"physical_18", name:"กระแทกเข่า", element:"physical", basePower:9, effects:[], description:"ทำดาเมจ 9 หน่วย" },
+  { id:"physical_18", name:"กระแทกเข่า", element:"physical", basePower:16, effects:[], description:"ทำดาเมจ 16 หน่วย" },
   { id:"physical_19", name:"หมัดฮึดสุดท้าย", element:"physical", basePower:5, effects:[{type:"guarantee_hit",duration:1}], description:"ทำดาเมจเบา 5 หน่วย แต่การันตีให้ท่าโจมตีหนักในเทิร์นถัดไปไม่มีทางพลาดเป้า" },
   { id:"physical_20", name:"ทลายจุดยุทธศาสตร์", element:"physical", basePower:40, effects:[], description:"ทำดาเมจหนักหน่วง 40 หน่วยทันที" },
 ];
@@ -1583,36 +1583,14 @@ function getSkillById(id){ return SKILL_LIBRARY.find(s=>s.id===id); }
 // สร้างการ์ดสกิลสำหรับดรอปในเกม โดยสุ่มจาก SKILL_LIBRARY ตามธาตุ/tier ที่กำหนด
 // tier สูงขึ้น -> เอนเอียงไปทาง basePower สูงขึ้น (ยังคงสุ่มได้ทุกใบในธาตุนั้น)
 function makeSkillCard(elem,tier){
-  const exceptions = {
-    fire: 'fire_20',
-    wood: 'wood_15',
-    water: 'water_20',
-    light: 'light_20',
-    dark: 'dark_20',
-    physical: 'physical_20'
-  };
-  const targetExceptionId = exceptions[elem];
-  
-  let pool = SKILL_LIBRARY.filter(s=>s.element===elem);
-  let base;
-  
-  // 10% chance to get the exception card, otherwise get normal cards (under 15 PWR)
-  if (targetExceptionId && Math.random() < 0.10) {
-    base = SKILL_LIBRARY.find(s=>s.id===targetExceptionId);
-  }
-  
-  // If we didn't pick the exception or if it doesn't exist, we choose from the rest
-  if (!base) {
-    const normalPool = pool.filter(s=>s.id !== targetExceptionId);
-    const sorted = normalPool.slice().sort((a,b)=>a.basePower-b.basePower);
-    const bandSize = Math.max(1, Math.floor(sorted.length/3));
-    const band = tier<=0 ? sorted.slice(0,bandSize+4) :
-                 tier===1 ? sorted.slice(bandSize, bandSize*2+4) :
-                 sorted.slice(bandSize);
-    const pickFrom = band.length ? band : sorted;
-    base = pickFrom[Math.floor(Math.random()*pickFrom.length)] || sorted[0];
-  }
-
+  const pool = SKILL_LIBRARY.filter(s=>s.element===elem);
+  const sorted = pool.slice().sort((a,b)=>a.basePower-b.basePower);
+  const bandSize = Math.max(1, Math.floor(sorted.length/3));
+  const band = tier<=0 ? sorted.slice(0,bandSize+4) :
+               tier===1 ? sorted.slice(bandSize, bandSize*2+4) :
+               sorted.slice(bandSize);
+  const pickFrom = band.length ? band : sorted;
+  const base = pickFrom[Math.floor(Math.random()*pickFrom.length)] || sorted[0];
   const effects = base.effects ? JSON.parse(JSON.stringify(base.effects)) : [];
   const multiHit = effects.find(e=>e.type==='multi_hit');
   const effectivePower = multiHit ? base.basePower*multiHit.count : base.basePower;
