@@ -1916,7 +1916,55 @@ const UI = {
     if(id==='multiplayer-lobby') Render.lobby();
     if(id==='pvp-screen') Render.pvpList();
     if(id==='trade-screen') Render.tradeList();
+    Music.playForScreen(id);
     window.scrollTo(0,0);
+  }
+};
+/* ============ BACKGROUND MUSIC ============
+   Maps each screen to a track and switches automatically whenever the
+   screen changes. Browsers block audio until the user interacts with the
+   page at least once, so we start playback on the first tap/click. */
+const Music = {
+  el: null,
+  current: null,
+  unlocked: false,
+  tracks: {
+    'title': 'music/Title.mp3',
+    'hub': 'music/HUB.mp3',
+    'combat': 'music/Combat.mp3',
+    'coop-combat': 'music/Combat.mp3',
+    'pvp-combat': 'music/Combat.mp3',
+    'server-pvp-combat': 'music/Combat.mp3'
+  },
+  fallback: 'music/HUB.mp3', // menu/inventory/etc. screens without a dedicated track
+  init(){
+    this.el = document.getElementById('bgm-player');
+    if(!this.el){
+      this.el = document.createElement('audio');
+      this.el.id = 'bgm-player';
+      this.el.loop = true;
+      this.el.preload = 'auto';
+      this.el.volume = 0.55;
+      document.body.appendChild(this.el);
+    }
+    const unlock = ()=>{
+      this.unlocked = true;
+      if(this.el.src && this.el.paused){ this.el.play().catch(()=>{}); }
+      document.removeEventListener('click', unlock);
+      document.removeEventListener('touchstart', unlock);
+    };
+    document.addEventListener('click', unlock);
+    document.addEventListener('touchstart', unlock);
+  },
+  trackFor(screenId){
+    return this.tracks[screenId] || this.fallback;
+  },
+  playForScreen(screenId){
+    const track = this.trackFor(screenId);
+    if(!track || track === this.current) return;
+    this.current = track;
+    this.el.src = track;
+    if(this.unlocked){ this.el.play().catch(()=>{}); }
   }
 };
 /* ============ FORCED NEW-PLAYER TUTORIAL ============
@@ -4916,6 +4964,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   Game.init();
   Net.init();
   ServerAuth.init();
+  Music.init();
   UI.goto('title');
 });
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
