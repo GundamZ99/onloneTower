@@ -339,16 +339,41 @@ input:focus{outline:1px solid var(--gold);}
 .hand-grid .card .cpower{float:none;display:block;font-size:11px;margin-top:1px;}
 .hand-grid .card .elem-tag{font-size:9.5px;padding:1px 5px;}
 .hand-grid .card .cdesc{display:none;}
-.card-bag-wrap{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
-.card-bag-wrap .bag-title{font-size:12px;color:var(--text-dim);margin-bottom:4px;}
-.card-bag-wrap .bag-cards{display:flex;flex-wrap:wrap;gap:6px;}
-.card-bag-wrap .card{width:calc((100% - 12px)/3);margin:0;padding:6px;box-sizing:border-box;opacity:.85;}
-.card-bag-wrap .card .cname{font-size:11px;display:block;line-height:1.2;}
-.card-bag-wrap .card .cpower{float:none;display:block;font-size:10.5px;}
-.card-bag-wrap .swap-row{display:flex;gap:3px;margin-top:4px;}
-.card-bag-wrap .swap-row button{flex:1;font-size:10px;padding:3px 0;border-radius:5px;border:1px solid var(--gold);
+.storage-wrap{margin-top:8px;padding-top:8px;}
+.storage-wrap .storage-title{font-size:12px;color:var(--text-dim);margin-bottom:4px;}
+.storage-wrap .storage-cards{display:flex;flex-wrap:wrap;gap:6px;}
+.storage-wrap .card{width:calc((100% - 12px)/3);margin:0;padding:6px;box-sizing:border-box;opacity:.9;}
+.storage-wrap .card .cname{font-size:11px;display:block;line-height:1.2;}
+.storage-wrap .card .cpower{float:none;display:block;font-size:10.5px;}
+.storage-wrap .swap-row{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap;}
+.storage-wrap .swap-row button{flex:1;font-size:10px;padding:3px 0;border-radius:5px;border:1px solid var(--gold);
   background:transparent;color:var(--gold);cursor:pointer;}
-.card-bag-wrap .swap-row button:active{background:var(--gold);color:#000;}
+/* ===== Sticky "who's fighting" header for every battle mode =====
+   Keeps the enemy (and your own) HP bar pinned to the top of the screen while the
+   player scrolls down to the card hand, so it's never hidden while picking a move.
+   Applied to: Solo PvE (#combat-enemies + #combat-allies wrapper), Co-op (#coop-enemy),
+   real-time PvP and server PvP (.pvp-vs). */
+.battle-sticky-top{position:sticky;top:0;z-index:5;padding-top:6px;margin:0 0 6px;
+  background:linear-gradient(180deg,var(--bg-void) 82%,rgba(11,7,16,0) 100%);}
+/* ===== Compact battle layout on small phones (iPhone 11 and similar ~375-414px wide)
+   Shrinks the biggest space-eaters — monster/boss art, dice, log — so the enemy HP bar,
+   combat log and the first row of cards can all fit without the HP bar scrolling away. ===== */
+@media (max-width:480px){
+  .combatant{padding:6px;margin:5px 0;}
+  .combatant .monster-img{max-width:84px;max-height:84px;margin:0 auto 4px auto;}
+  .combatant .boss-img{max-width:130px;max-height:170px;margin:0 auto 5px auto;}
+  .combatant .name-row{margin-bottom:2px;font-size:13px;}
+  .hpbar-wrap{height:12px;}
+  .divider{margin:8px 0;}
+  .dice{width:46px;height:46px;margin:6px auto;font-size:18px;border-radius:10px;}
+  .log{height:64px;font-size:11px;padding:6px 8px;}
+  #combat-chance,#pvp-status,#spvp-status,#coop-turn-status{font-size:11px;}
+  .hand-grid .card{padding:5px;}
+  .hand-grid .card .cname{font-size:10.5px;}
+  .weapon-slot-btn{padding:7px 10px;font-size:12px;margin:4px 0;}
+  .pvp-vs{margin:6px 0;}
+}
+.storage-wrap .swap-row button:active{background:var(--gold);color:#000;}
 .dice{width:74px;height:74px;margin:14px auto;border:2px solid var(--gold);border-radius:14px;
   display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;
   background:radial-gradient(circle at 30% 30%,#2a2040,#100b1a);color:var(--gold);
@@ -360,11 +385,6 @@ input:focus{outline:1px solid var(--gold);}
   height:110px;overflow-y:auto;font-size:12.5px;color:var(--text-dim);}
 .log div{padding:2px 0;border-bottom:1px dashed #221c33;}
 .log div.hit{color:var(--good);} .log div.dmg{color:var(--bad);} .log div.sys{color:var(--gold);}
-.tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;
-  background:rgba(15,10,24,.97);border-top:1px solid var(--line);z-index:30;backdrop-filter:blur(8px);}
-.tabbar .tab{flex:1;text-align:center;padding:10px 2px 8px;font-size:10px;color:var(--text-dim);cursor:pointer;}
-.tabbar .tab .ic{font-size:19px;display:block;margin-bottom:2px;}
-.tabbar .tab.active{color:var(--gold);}
 .grid10{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
 .slot{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:var(--bg-panel2);
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;
@@ -635,18 +655,20 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
   <div class="screen" id="screen-server-pvp-combat">
     <div class="topbar"><span class="back" onclick="ServerPvp.leave()">✕</span><span class="title">ดวล PvP (เซิร์ฟเวอร์กลาง)</span><span></span></div>
     <div style="padding:8px 2px;">
-      <div class="pvp-vs">
-        <div class="side">
-          <div class="small-text" id="spvp-my-name">คุณ</div>
-          <div class="hpbar-wrap"><div class="hpbar" id="spvp-my-hpbar" style="width:100%"></div>
-            <div class="hpbar-label" id="spvp-my-hplabel"></div></div>
-        </div>
-        <div class="vs">VS</div>
-        <div class="side">
-          <div class="small-text" id="spvp-opp-name">คู่ต่อสู้</div>
-          <div class="hpbar-wrap"><div class="hpbar" id="spvp-opp-hpbar" style="width:100%"></div>
-            <div class="hpbar-label" id="spvp-opp-hplabel"></div></div>
-          <button class="btn small" style="width:auto;padding:0 8px;margin-top:4px;" onclick="ServerPvp.reportOpponent()">🚩 รายงาน</button>
+      <div class="battle-sticky-top">
+        <div class="pvp-vs">
+          <div class="side">
+            <div class="small-text" id="spvp-my-name">คุณ</div>
+            <div class="hpbar-wrap"><div class="hpbar" id="spvp-my-hpbar" style="width:100%"></div>
+              <div class="hpbar-label" id="spvp-my-hplabel"></div></div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="side">
+            <div class="small-text" id="spvp-opp-name">คู่ต่อสู้</div>
+            <div class="hpbar-wrap"><div class="hpbar" id="spvp-opp-hpbar" style="width:100%"></div>
+              <div class="hpbar-label" id="spvp-opp-hplabel"></div></div>
+            <button class="btn small" style="width:auto;padding:0 8px;margin-top:4px;" onclick="ServerPvp.reportOpponent()">🚩 รายงาน</button>
+          </div>
         </div>
       </div>
       <div class="center small-text" id="spvp-status">เลือกการ์ดของคุณ</div>
@@ -760,9 +782,11 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
   <div class="screen" id="screen-combat">
     <div class="topbar"><span class="back" onclick="Combat.flee()">✕</span><span class="title" id="combat-title">การต่อสู้</span><span></span></div>
     <div style="padding:8px 2px;">
-      <div id="combat-enemies"></div>
-      <div class="divider"></div>
-      <div id="combat-allies"></div>
+      <div class="battle-sticky-top">
+        <div id="combat-enemies"></div>
+        <div class="divider"></div>
+        <div id="combat-allies"></div>
+      </div>
       <div class="center small-text" id="combat-chance"></div>
       <div class="dice" id="dice-display">?</div>
       <div class="log" id="combat-log"></div>
@@ -780,7 +804,9 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
   <div class="screen" id="screen-coop-combat">
     <div class="topbar"><span class="back" onclick="CoopCombat.leave()">✕</span><span class="title" id="coop-title">หอคอยปีศาจ (ร่วมทีม)</span><span></span></div>
     <div style="padding:8px 2px;">
-      <div id="coop-enemy"></div>
+      <div class="battle-sticky-top">
+        <div id="coop-enemy"></div>
+      </div>
       <div class="divider"></div>
       <div class="eyebrow">ปาร์ตี้</div>
       <div id="coop-party"></div>
@@ -796,17 +822,19 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
   <div class="screen" id="screen-pvp-combat">
     <div class="topbar"><span class="back" onclick="Combat.leavePvp()">✕</span><span class="title">ดวล PvP</span><span></span></div>
     <div style="padding:8px 2px;">
-      <div class="pvp-vs">
-        <div class="side">
-          <div class="small-text" id="pvp-my-name">คุณ</div>
-          <div class="hpbar-wrap"><div class="hpbar" id="pvp-my-hpbar" style="width:100%"></div>
-            <div class="hpbar-label" id="pvp-my-hplabel"></div></div>
-        </div>
-        <div class="vs">VS</div>
-        <div class="side">
-          <div class="small-text" id="pvp-opp-name">คู่ต่อสู้</div>
-          <div class="hpbar-wrap"><div class="hpbar" id="pvp-opp-hpbar" style="width:100%"></div>
-            <div class="hpbar-label" id="pvp-opp-hplabel"></div></div>
+      <div class="battle-sticky-top">
+        <div class="pvp-vs">
+          <div class="side">
+            <div class="small-text" id="pvp-my-name">คุณ</div>
+            <div class="hpbar-wrap"><div class="hpbar" id="pvp-my-hpbar" style="width:100%"></div>
+              <div class="hpbar-label" id="pvp-my-hplabel"></div></div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="side">
+            <div class="small-text" id="pvp-opp-name">คู่ต่อสู้</div>
+            <div class="hpbar-wrap"><div class="hpbar" id="pvp-opp-hpbar" style="width:100%"></div>
+              <div class="hpbar-label" id="pvp-opp-hplabel"></div></div>
+          </div>
         </div>
       </div>
       <div class="center small-text" id="pvp-status">เลือกการ์ดของคุณ</div>
@@ -843,8 +871,12 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <h3 style="margin-top:18px;">ช่องอุปกรณ์ (2 ช่อง)</h3>
       <div class="grid10" id="equip-grid" style="grid-template-columns:1fr 1fr;"></div>
       <div class="divider"></div>
-      <h3>สำรับการ์ด (สูงสุด <span id="deck-limit">3</span>)</h3>
+      <h3>สำรับการ์ด (สูงสุด <span id="deck-limit">3</span> ใบ — ใช้ในการต่อสู้เท่านั้น)</h3>
       <div id="deck-list"></div>
+      <div class="divider"></div>
+      <h3>🎒 คลังเก็บการ์ด (สูงสุด <span id="storage-limit">5</span> ช่อง)</h3>
+      <p class="small-text">การ์ดที่ได้จากหอคอยปีศาจ/เทรดจะถูกเก็บไว้ที่นี่ก่อน แตะการ์ดเพื่อสลับเข้าสำรับ หากคลังเต็มการ์ดใหม่จะถูกทำลายอัตโนมัติ</p>
+      <div id="card-storage-list"></div>
       <div class="divider"></div>
       <button class="btn" id="btn-nav-trade" onclick="UI.goto('trade-screen')">🤝 เทรดกับผู้เล่นอื่น</button>
     </div>
@@ -924,13 +956,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
     </div>
   </div>
 
-  <div class="tabbar" id="tabbar" style="display:none;">
-    <div class="tab" data-s="hub" onclick="UI.goto('hub')"><span class="ic">🏕️</span>เมือง</div>
-    <div class="tab" data-s="demon-tower" onclick="UI.goto('demon-tower')"><span class="ic">🗼</span>หอปีศาจ</div>
-    <div class="tab" data-s="inventory-screen" onclick="UI.goto('inventory-screen')"><span class="ic">🎒</span>กระเป๋า</div>
-    <div class="tab" data-s="gacha-screen" onclick="UI.goto('gacha-screen')"><span class="ic">🎰</span>กาชา</div>
-    <div class="tab" data-s="friends-screen" onclick="UI.goto('friends-screen')"><span class="ic">👥</span>เพื่อน</div>
-  </div>
+
 </div>
 
 <!-- ============ DEMON TOWER ENTRY WARNING OVERLAY ============ -->
@@ -1188,6 +1214,7 @@ const ELEM_CLASS = {fire:'elem-fire',wood:'elem-wood',water:'elem-water',light:'
 // Max slots in the player's item bag (weapon slot is separate/unlimited-1). Bumped from
 // 10 -> 15 so players have more room before items start getting lost to a full bag.
 const BAG_LIMIT = 15;
+const CARD_STORAGE_LIMIT = 5; // dedicated card-storage compartment in the bag, separate from the 3-card battle deck
 const ITEM_TEMPLATES = {
   potion_small:{name:'ยาฟื้นฟูเล็ก',ic:'🧪',type:'consumable',heal:20,buyPrice:1,desc:'ฟื้นฟู HP 20 หน่วย'},
   potion_full:{name:'ยาฟื้นฟูเต็ม',ic:'🧫',type:'consumable',heal:'full',buyPrice:10,desc:'ฟื้นฟู HP เต็มจำนวนทันที'},
@@ -1664,16 +1691,30 @@ function grantDemonCardDrop(p, floor){
   const tier = floor > 300 ? 2 : floor > 100 ? 1 : 0;
   const card = makeSkillCard(elem, tier);
   card.desc = `${card.desc} (การ์ดดรอปจากหอคอยปีศาจ ชั้น ${floor})`;
-  p.deck.push(card);
 
   const ELEM_IC = {fire:'🔥',wood:'🌿',water:'💧',light:'✨',dark:'🌑',physical:'⚔️'};
   const elemIC = ELEM_IC[elem] || '🃏';
   const crossTag = isSameElem ? '' : ' (ข้ามสาย)';
+
+  // Cards no longer go straight into the 3-card battle deck. They land in the
+  // dedicated 5-slot card storage in the bag instead; if storage is already
+  // full, the new card is destroyed automatically.
+  p.cardStorage = p.cardStorage || [];
+  if(p.cardStorage.length >= CARD_STORAGE_LIMIT){
+    LootPopup.push({
+      ic: elemIC,
+      tag: `🃏 การ์ดดรอป — ชั้น ${floor}${crossTag}`,
+      name: card.name,
+      msg: `PWR ${card.power} · คลังเก็บการ์ดเต็ม (${CARD_STORAGE_LIMIT}/${CARD_STORAGE_LIMIT}) — ท่าใหม่ถูกทำลายทิ้งอัตโนมัติ`
+    });
+    return;
+  }
+  p.cardStorage.push(card);
   LootPopup.push({
     ic: elemIC,
     tag: `🃏 การ์ดดรอป — ชั้น ${floor}${crossTag}`,
     name: card.name,
-    msg: `PWR ${card.power} · ${isSameElem ? 'ตรงสายธาตุ' : 'ต่างสาย'} · เพิ่มเข้าสำรับอัตโนมัติแล้ว`
+    msg: `PWR ${card.power} · ${isSameElem ? 'ตรงสายธาตุ' : 'ต่างสาย'} · เก็บเข้าคลังการ์ดในกระเป๋าแล้ว (${p.cardStorage.length}/${CARD_STORAGE_LIMIT})`
   });
 }
 function raceName(id){ return (RACES.find(r=>r.id===id)||{}).name || id; }
@@ -1728,6 +1769,14 @@ const Game = {
       p.equipment = p.equipment && p.equipment.length===2 ? p.equipment : [null,null];
       p.deck = p.deck || [];
       p.deckLimit = 3;
+      // MIGRATION: dedicated 5-slot card storage in the bag, separate from the
+      // 3-card battle deck. Any cards that used to overflow into the deck itself
+      // (old "spare card" bag system) are moved here instead.
+      p.cardStorage = p.cardStorage || [];
+      if(p.deck.length > p.deckLimit){
+        const overflow = p.deck.splice(p.deckLimit);
+        overflow.forEach(c=>{ if(p.cardStorage.length < CARD_STORAGE_LIMIT) p.cardStorage.push(c); });
+      }
       p.weaponSlot = p.weaponSlot || null;
       // MIGRATION: godly-weapon ultimates used to live as a locked, unplayable card
       // in the deck ("ใช้ผ่านช่องอาวุธ"). They now live only on the weapon-slot
@@ -1760,7 +1809,7 @@ const Game = {
     const p = {
       name, raceId:race.id, classId:cls.id, level:1, floorTraining:1, floorDemon:1,
       hp:race.hp, maxHp:race.hp, atk:race.atk, mag:race.mag, luk:race.luk, gold:20,
-      deck:[Object.assign({id:'base_'+cls.id}, cls.card)], deckLimit:3,
+      deck:[Object.assign({id:'base_'+cls.id}, cls.card)], deckLimit:3, cardStorage:[],
       inventory:[{tplId:'potion_small', qty:2}], equipment:[null,null],
       weaponSlot:null, gachaSpins:0,
       dailyLogin:{day:1, lastClaimDate:null},
@@ -1854,8 +1903,6 @@ const UI = {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const el = document.getElementById('screen-'+id); if(!el) return;
     el.classList.add('active'); this.current = id;
-    const tb = document.getElementById('tabbar'); tb.style.display = Game.state.player ? 'flex' : 'none';
-    document.querySelectorAll('.tabbar .tab').forEach(t=>t.classList.toggle('active', t.dataset.s===id));
     if(id==='char-create' && !Game.state.player){
       const rollBtn = document.getElementById('btn-roll-fate'); const nameInput = document.getElementById('input-charname'); const rollResult = document.getElementById('roll-result');
       if(rollBtn) rollBtn.disabled = false;
@@ -2140,34 +2187,42 @@ const ConfirmDialog = {
   }
 };
 
-/* Swap two cards inside the player's deck array (used to bring a "bag" card
-   into one of the 3 active battle slots, and vice versa). */
-function swapDeckCards(idxA, idxB){
-  const p = Game.state.player;
-  if(idxA===idxB || !p.deck || !p.deck[idxA] || !p.deck[idxB]) return;
-  const tmp = p.deck[idxA]; p.deck[idxA] = p.deck[idxB]; p.deck[idxB] = tmp;
-  Game.save();
-}
-/* Build the "bag" HTML for cards beyond the active 3-per-row battle hand.
-   activeCount is normally 3 (or less if the deck itself has fewer cards).
-   onSwapFn is the name of a global function(bagIdx) that re-renders the
-   specific screen (combat / pvp / coop) after performing the swap. */
-function renderCardBagHtml(deck, activeCount, onSwapFn){
-  if(!deck || deck.length<=activeCount) return '';
-  const bagCards = deck.slice(activeCount);
-  return `<div class="card-bag-wrap">
-    <div class="bag-title">🎒 การ์ดสำรอง (เกิน 3 ใบ) — แตะปุ่มเพื่อสลับเข้าไปในการ์ดที่ใช้ต่อสู้</div>
-    <div class="bag-cards">${bagCards.map((c,j)=>{
-      const bagIdx = activeCount+j;
-      return `<div class="card" onclick="CardInfo.show(Game.state.player.deck[${bagIdx}])">
-        <span class="cname">${c.name}</span><span class="cpower">PWR ${c.power}</span>
-        <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div>
-        <div class="swap-row">${Array.from({length:activeCount},(_,s)=>
-          `<button onclick="event.stopPropagation();swapDeckCards(${bagIdx},${s});${onSwapFn}();">สลับช่อง${s+1}</button>`).join('')}
-        </div></div>`;
-    }).join('')}</div>
-  </div>`;
-}
+/* ---- Card storage <-> deck management ----
+   Battle now always uses exactly the player's 3-card deck (deckLimit is fixed
+   at 3) — there is no more mid-battle "spare card" swapping. Instead, extra
+   cards live in a separate 5-slot card storage compartment in the bag
+   (p.cardStorage), and players rearrange their deck from the inventory
+   screen only, outside of combat. */
+const CardStorage = {
+  /* Move a card from storage into an empty (or explicitly chosen) deck slot. */
+  toDeck(storageIdx, deckIdx){
+    const p = Game.state.player;
+    if(!p.cardStorage || !p.cardStorage[storageIdx]) return;
+    if(deckIdx===undefined || deckIdx===null){
+      if(p.deck.length>=p.deckLimit){ Toast.show('สำรับเต็ม (3 ใบ) — เลือกช่องที่จะแทนที่ก่อน'); return; }
+      p.deck.push(p.cardStorage[storageIdx]);
+    } else {
+      if(!p.deck[deckIdx]) return;
+      const removed = p.deck[deckIdx];
+      p.deck[deckIdx] = p.cardStorage[storageIdx];
+      p.cardStorage[storageIdx] = removed;
+      Game.save(); Toast.show('🔄 สลับการ์ดกับสำรับแล้ว'); Render.inventory(); return;
+    }
+    p.cardStorage.splice(storageIdx,1);
+    Game.save(); Toast.show('🃏 ใส่การ์ดลงสำรับแล้ว'); Render.inventory();
+  },
+  /* Move a card from the deck back into storage (frees a deck slot). */
+  toStorage(deckIdx){
+    const p = Game.state.player;
+    if(!p.deck[deckIdx]) return;
+    p.cardStorage = p.cardStorage || [];
+    if(p.cardStorage.length>=CARD_STORAGE_LIMIT){ Toast.show(`คลังเก็บการ์ดเต็ม (${CARD_STORAGE_LIMIT}/${CARD_STORAGE_LIMIT})`); return; }
+    if(p.deck.length<=1){ Toast.show('ต้องมีการ์ดอย่างน้อย 1 ใบในสำรับ'); return; }
+    const [card] = p.deck.splice(deckIdx,1);
+    p.cardStorage.push(card);
+    Game.save(); Toast.show('🎒 เก็บการ์ดเข้าคลังแล้ว'); Render.inventory();
+  }
+};
 
 /* Center-screen item-gain popup — used for boss kills, monster kills, and gacha spins.
    Queues entries so multiple drops (e.g. gacha x10) display one after another instead of overlapping. */
@@ -2498,7 +2553,20 @@ const Render = {
     document.getElementById('deck-limit').textContent = p.deckLimit;
     document.getElementById('deck-list').innerHTML = p.deck.map((c,i)=>`
       <div class="card" onclick="CardInfo.show(Game.state.player.deck[${i}])"><span class="cname">${c.name}</span>${c.godTier?'<span class="badge god" style="margin-left:6px;">ULTIMATE</span>':''}<span class="cpower">PWR ${c.power}</span>
-        <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div><div class="cdesc">${c.desc||''}</div></div>`).join('');
+        <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div><div class="cdesc">${c.desc||''}</div>
+        ${c.godTier?'':`<div class="swap-row"><button onclick="event.stopPropagation();CardStorage.toStorage(${i})">🎒 เก็บเข้าคลัง</button></div>`}
+      </div>`).join('');
+    document.getElementById('storage-limit').textContent = CARD_STORAGE_LIMIT;
+    p.cardStorage = p.cardStorage || [];
+    document.getElementById('card-storage-list').innerHTML = p.cardStorage.length ? `<div class="storage-wrap"><div class="storage-cards">${p.cardStorage.map((c,j)=>`
+      <div class="card" onclick="CardInfo.show(Game.state.player.cardStorage[${j}])">
+        <span class="cname">${c.name}</span><span class="cpower">PWR ${c.power}</span>
+        <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div>
+        <div class="swap-row">${p.deck.length<p.deckLimit
+          ? `<button onclick="event.stopPropagation();CardStorage.toDeck(${j})">➕ ใส่ลงสำรับ</button>`
+          : Array.from({length:p.deckLimit},(_,s)=>`<button onclick="event.stopPropagation();CardStorage.toDeck(${j},${s})">แทนช่อง${s+1}</button>`).join('')}
+        </div></div>`).join('')}</div></div>`
+      : '<p class="small-text">คลังว่างเปล่า</p>';
   },
   lobby(){
     const statusLabel = {idle:'⏳ ยังไม่เริ่ม',connecting:'⏳ กำลังเชื่อมต่อ...',ready:'🟢 พร้อมใช้งาน',error:'🔴 เชื่อมต่อล้มเหลว',disconnected:'🟠 หลุดการเชื่อมต่อ',unavailable:'🔴 ไม่พร้อมใช้งาน'}[Net.status] || Net.status;
@@ -2832,7 +2900,7 @@ const Combat = {
           <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div>
           <span onclick="event.stopPropagation();CardInfo.show(Game.state.player.deck[${i}]);" style="font-size:14px;">ℹ️</span>
         </div></div>`;
-    }).join('') + '</div>' + renderCardBagHtml(p.deck, activeCount, 'Combat.render');
+    }).join('') + '</div>';
     document.getElementById('btn-play-card').disabled = this.active.selectedCard===undefined || this.active.selectedCard===null;
     const hasPotion = p.inventory.some(it=>it && ITEM_TEMPLATES[it.tplId] && ITEM_TEMPLATES[it.tplId].type==='consumable');
     document.getElementById('btn-heal-action').disabled = !hasPotion;
@@ -3372,7 +3440,7 @@ const Combat = {
           <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div>
           <span onclick="event.stopPropagation();CardInfo.show(Game.state.player.deck[${i}]);" style="font-size:14px;">ℹ️</span>
         </div></div>`;
-    }).join('') + '</div>' + (pv.mySel ? '' : renderCardBagHtml(p.deck, activeCount, 'Combat.renderPvp'));
+    }).join('') + '</div>';
     document.getElementById('pvp-log').innerHTML = pv.log.slice(0,30).map(l=>`<div class="${l.cls}">${l.msg}</div>`).join('');
     document.getElementById('pvp-status').textContent = pv.mySel ? '⏳ รอคู่ต่อสู้ล็อกการ์ด...' : `🎯 โอกาสสำเร็จของคุณ: ${lukSuccessChance(p.luk).toFixed(1)}% — เลือกการ์ดแล้วกดล็อก`;
     document.getElementById('btn-pvp-lock').disabled = pv.mySelIndex===undefined || pv.mySelIndex===null || !!pv.mySel;
@@ -3836,7 +3904,6 @@ const CoopCombat = {
             <span onclick="event.stopPropagation();CardInfo.show(Game.state.player.deck[${i}]);" style="font-size:14px;">ℹ️</span>
           </div></div>`;
       }).join('')}</div>
-        ${renderCardBagHtml(p.deck, activeCount, 'CoopCombat.render')}
         <div class="btn-row">
           <button class="btn" id="coop-btn-heal-action" onclick="CoopCombat.openHealMenu()" ${hasPotion?'':'disabled'}>🎒 ใช้ยาฟื้นฟู HP</button>
           <button class="btn primary" onclick="CoopCombat.confirmCard()" ${(st.selectedCard===null||st.selectedCard===undefined)?'disabled':''}>⚔️ เล่นการ์ดที่เลือก</button>
@@ -4258,7 +4325,11 @@ const Trade = {
     if(!confirm(`${msg.fromName||'ผู้เล่น'} เสนอเทรด ${msg.cards.length} การ์ด + ${msg.items.length} ไอเทม${goldLine} รับหรือไม่?`)){ Net.sendToPeer(msg.from, {type:'trade_decline', from:Net.peerId}); return; }
     const p = Game.state.player, receivedNames = [];
     const acceptedCardIdxs = [], acceptedItemIdxs = [];
-    msg.cards.forEach((c,i)=>{ if(p.deck.length<p.deckLimit){ p.deck.push(c); receivedNames.push(c.name); acceptedCardIdxs.push(i); } });
+    p.cardStorage = p.cardStorage || [];
+    msg.cards.forEach((c,i)=>{
+      if(p.deck.length<p.deckLimit){ p.deck.push(c); receivedNames.push(c.name); acceptedCardIdxs.push(i); }
+      else if(p.cardStorage.length<CARD_STORAGE_LIMIT){ p.cardStorage.push(c); receivedNames.push(c.name+' (เก็บเข้าคลัง)'); acceptedCardIdxs.push(i); }
+    });
     msg.items.forEach((it,i)=>{
       // Godly weapons must go through grantWeapon() so that receiving a duplicate of a
       // Godly weapon you already own merges into the existing copy's awaken tier, instead
@@ -4545,8 +4616,6 @@ const ServerAuth = {
     if(statusEl) statusEl.textContent = 'ออกจากระบบแล้ว';
     const friendsBtn = document.getElementById('btn-server-friends');
     if(friendsBtn) friendsBtn.style.display = 'none';
-    const tb = document.getElementById('tabbar');
-    if(tb) tb.style.display = 'none';
   },
   /* Logout triggered from inside the Hub (in-game), where the player still has
      an active character on screen — confirm first so a stray tap can't kick
@@ -4852,4 +4921,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html>
+</html> 
