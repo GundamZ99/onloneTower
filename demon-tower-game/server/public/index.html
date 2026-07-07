@@ -846,7 +846,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <h3>สำรับการ์ด (สูงสุด <span id="deck-limit">3</span>)</h3>
       <div id="deck-list"></div>
       <div class="divider"></div>
-      <button class="btn" onclick="UI.goto('trade-screen')">🤝 เทรดกับผู้เล่นอื่น</button>
+      <button class="btn" id="btn-nav-trade" onclick="UI.goto('trade-screen')">🤝 เทรดกับผู้เล่นอื่น</button>
     </div>
   </div>
 
@@ -945,8 +945,8 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
     </div>
     <div class="dt-warn-safe" id="dt-warn-party-note">🛡️ มีปาร์ตี้ร่วมทีมอยู่ — คุณจะได้รับระบบป้องกันพิเศษ</div>
     <div class="dt-warn-btnrow">
-      <button class="btn ghost" onclick="DemonTowerWarning.cancel()">ยกเลิก</button>
-      <button class="btn danger-confirm" onclick="DemonTowerWarning.confirm()">ฉันเข้าใจแล้ว เข้าสู่หอคอย</button>
+      <button class="btn ghost" id="btn-dt-warn-cancel" onclick="DemonTowerWarning.cancel()">ยกเลิก</button>
+      <button class="btn danger-confirm" id="btn-dt-warn-confirm" onclick="DemonTowerWarning.confirm()">ฉันเข้าใจแล้ว เข้าสู่หอคอย</button>
     </div>
   </div>
 </div>
@@ -1905,6 +1905,7 @@ const Tutorial = {
       {desc_only:true, title:'เก่งมาก!', desc:'นั่นคือระบบการต่อสู้หลักของเกม ใช้แบบเดียวกันทั้งในหอฝึกฝน หอคอยปีศาจ และ PvP ทีนี้กลับไปที่เมืองเพื่อดูโหมดอื่นๆ กันต่อ', beforeShow(){ UI.goto('hub'); }},
       {sel:'#btn-nav-demontower', title:'หอคอยปีศาจ', desc:'โหมดหลักของเกม ปีนได้สูงสุด 1,000 ชั้น เล่นร่วมกับเพื่อนในปาร์ตี้แบบเรียลไทม์ได้ กดปุ่มนี้เพื่อดู', expectScreen:'demon-tower'},
       {desc_only:true, title:'⚠️ ระวัง Permadeath', desc:'ถ้า HP คุณเหลือ 0 ในหอคอยปีศาจ ตัวละครจะสูญเสียทุกอย่างและเริ่มใหม่ที่ชั้น 1 ควรเช็ค HP และไอเทมฮีลให้พร้อมก่อนปีนขึ้นชั้นถัดไปเสมอ'},
+      {desc_only:true, title:'Popup ยืนยันก่อนเข้าเล่น', desc:'ทุกครั้งที่กดปุ่ม "ปีนขึ้นชั้นถัดไป" ระบบจะแสดง Popup เตือน Permadeath ให้อ่านและกด "เข้าใจแล้ว" ก่อนเสมอ จึงจะเข้าสู่การต่อสู้จริงได้ — ลองกดเข้าเล่นด้วยตัวเองได้ภายหลังตอนพร้อม'},
       {sel:'#screen-demon-tower .back', title:'ปุ่มย้อนกลับ', desc:'แตะลูกศรนี้เพื่อกลับไปหน้าเมืองเสมอ ใช้ปุ่มนี้ได้ทุกหน้าจอ', expectScreen:'hub'},
       {sel:'#btn-nav-pvp', title:'ดวล PvP เรียลไทม์', desc:'ท้าดวลผู้เล่นคนอื่นแบบเรียลไทม์ ทั้งสองฝ่ายเลือกการ์ดพร้อมกันแล้วระบบตัดสินผลทันที ไม่มีการสูญเสียถาวร กดเพื่อดูหน้าจอ', expectScreen:'pvp-screen'},
       {sel:'#screen-pvp-screen .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมืองอีกครั้ง', expectScreen:'hub'},
@@ -1915,6 +1916,9 @@ const Tutorial = {
       {sel:'#screen-merchant-screen .back', title:'ปิดร้านค้า', desc:'แตะลูกศรนี้เพื่อออกจากร้านค้ากลับไปเมือง', expectScreen:'hub'},
       {sel:'#btn-nav-inventory', title:'กระเป๋าและอุปกรณ์', desc:'จัดการไอเทม อุปกรณ์ อาวุธ และสำรับการ์ดของคุณที่นี่ กดเพื่อเข้าไปดู', expectScreen:'inventory-screen'},
       {desc_only:true, title:'ภายในกระเป๋า', desc:'แตะไอเทม/อุปกรณ์/การ์ดแต่ละชิ้นเพื่อดูรายละเอียด สวมใส่ ถอด หรือขายได้ ส่วนปุ่ม "เทรดกับผู้เล่นอื่น" ด้านล่างใช้แลกเปลี่ยนของกับเพื่อนในห้อง'},
+      {sel:'#btn-nav-trade', title:'เทรดกับผู้เล่นอื่น', desc:'แลกเปลี่ยนการ์ด อาวุธ หรือไอเทมกับเพื่อนที่ออนไลน์อยู่ในปาร์ตี้เดียวกันแบบ Peer-to-Peer กดปุ่มนี้เพื่อดูหน้าจอ', expectScreen:'trade-screen'},
+      {desc_only:true, title:'หน้าจอเทรด P2P', desc:'เลือกผู้เล่นในรายชื่อเพื่อเสนอข้อเสนอเทรด ทั้งสองฝ่ายต้องกดยืนยันข้อเสนอจึงจะแลกเปลี่ยนสำเร็จ ไม่มีการบังคับหรือหลอกยึดของกัน'},
+      {sel:'#screen-trade-screen .back', title:'กลับไปกระเป๋า', desc:'แตะลูกศรนี้เพื่อกลับไปหน้ากระเป๋า', expectScreen:'inventory-screen'},
       {sel:'#screen-inventory-screen .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมือง', expectScreen:'hub'},
       {sel:'#btn-nav-friends', title:'เพื่อน / ปาร์ตี้', desc:'ค้นหาและเพิ่มเพื่อน จัดการคำขอเป็นเพื่อน และเชิญเข้าปาร์ตี้เพื่อเล่นหอคอยปีศาจร่วมกัน กดเพื่อเข้าไปดู', expectScreen:'friends-screen'},
       {sel:'#screen-friends-screen .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมือง', expectScreen:'hub'},
@@ -1948,6 +1952,7 @@ const Tutorial = {
 
   _onDocClick(e){
     if(!this.active || this.paused) return;
+    if(e.target.closest('.overlay.active')) return; // never block clicks inside an open modal popup
     if(!this.currentTarget){ e.preventDefault(); e.stopPropagation(); return; }
     if(this.currentTarget===e.target || this.currentTarget.contains(e.target)){
       const step = this.steps[this.idx];
@@ -3457,16 +3462,24 @@ const Combat = {
 //   here yet. Both would be reasonable follow-ups.
 const DemonTowerWarning = {
   show(){
-    const onlineParty = Object.values(Game.state.party).filter(pl=>pl.online);
-    const note = document.getElementById('dt-warn-party-note');
-    if(note) note.classList.toggle('hidden', onlineParty.length===0);
-    document.getElementById('overlay-dt-warning').classList.add('active');
+    try{
+      const onlineParty = Object.values(Game.state.party||{}).filter(pl=>pl.online);
+      const note = document.getElementById('dt-warn-party-note');
+      if(note) note.classList.toggle('hidden', onlineParty.length===0);
+      const ov = document.getElementById('overlay-dt-warning');
+      if(ov) ov.classList.add('active'); else CoopCombat.enterFloor(); // element missing -> don't block the player, just enter
+    }catch(e){
+      console.warn('[DemonTowerWarning] show failed, entering directly:', e);
+      CoopCombat.enterFloor(); // never let a popup error trap the player on the screen
+    }
   },
   cancel(){
-    document.getElementById('overlay-dt-warning').classList.remove('active');
+    const ov = document.getElementById('overlay-dt-warning');
+    if(ov) ov.classList.remove('active');
   },
   confirm(){
-    document.getElementById('overlay-dt-warning').classList.remove('active');
+    const ov = document.getElementById('overlay-dt-warning');
+    if(ov) ov.classList.remove('active');
     CoopCombat.enterFloor();
   }
 };
