@@ -1923,7 +1923,8 @@ const Tutorial = {
       {sel:'#btn-nav-friends', title:'เพื่อน / ปาร์ตี้', desc:'ค้นหาและเพิ่มเพื่อน จัดการคำขอเป็นเพื่อน และเชิญเข้าปาร์ตี้เพื่อเล่นหอคอยปีศาจร่วมกัน กดเพื่อเข้าไปดู', expectScreen:'friends-screen'},
       {sel:'#screen-friends-screen .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมือง', expectScreen:'hub'},
       {sel:'#btn-nav-party', title:'สถานะปาร์ตี้', desc:'ดูสมาชิกปาร์ตี้ปัจจุบันแบบเรียลไทม์ กดเพื่อเข้าไปดู', expectScreen:'multiplayer-lobby'},
-      {sel:'#screen-multiplayer-lobby .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับ', expectScreen:'hub'},
+      {sel:'#screen-multiplayer-lobby .back', title:'กลับไปหน้าเพื่อน', desc:'แตะลูกศรนี้เพื่อกลับไปหน้าเพื่อน', expectScreen:'friends-screen'},
+      {sel:'#screen-friends-screen .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมือง', expectScreen:'hub'},
       {sel:'#btn-open-daily-login', title:'ล็อกอินรายวัน', desc:'รับรางวัลฟรีทุกวันที่เข้าเกม กดเพื่อเข้าไปดู', expectScreen:'daily-login'},
       {sel:'#btn-daily-claim', title:'รับรางวัลวันนี้', desc:'กดปุ่มนี้เพื่อรับรางวัลประจำวันของคุณตอนนี้เลย', skipIf:()=>{ const b=document.getElementById('btn-daily-claim'); return !b || b.disabled; }},
       {sel:'#screen-daily-login .back', title:'กลับเมือง', desc:'แตะเพื่อย้อนกลับไปเมือง', expectScreen:'hub'},
@@ -2018,19 +2019,28 @@ const Tutorial = {
     clearInterval(this._targetPoll);
     clearInterval(this._posPoll);
     if(selector === '#tutorial-next-btn'){
-      // The "next" button for desc_only steps lives inside the tooltip itself,
-      // so it can never be measured while the tooltip is hidden — show it
-      // immediately instead of polling for an element that can't appear.
+      // The "next" button for desc_only steps lives inside the tooltip itself.
+      // We must NOT position the tooltip based on this button's rect (like we do
+      // for real page targets below) — that creates an infinite feedback loop:
+      // moving the tooltip moves the button, which gets re-measured on the next
+      // poll tick, moving the tooltip again, causing constant flicker/drift.
+      // Instead: give the tooltip a fixed, stable spot and position the spotlight
+      // box just once (nothing here moves on its own, so no interval is needed).
       const el = document.getElementById('tutorial-next-btn');
-      document.getElementById('tutorial-tooltip').style.display = 'block';
+      const tip = document.getElementById('tutorial-tooltip');
+      tip.style.left = '50%';
+      tip.style.top = 'auto';
+      tip.style.bottom = '90px';
+      tip.style.transform = 'translateX(-50%)';
+      tip.style.display = 'block';
       this.currentTarget = el;
       document.getElementById('tutorial-spotlight').style.display = 'block';
-      this._positionSpotlight(el);
-      this._posPoll = setInterval(()=>this._positionSpotlight(el), 300);
+      requestAnimationFrame(()=>this._positionSpotlightBox(el));
       return;
     }
     document.getElementById('tutorial-spotlight').style.display = 'none';
     document.getElementById('tutorial-tooltip').style.display = 'none';
+    document.getElementById('tutorial-tooltip').style.bottom = ''; // clear any fixed-mode leftover from a desc_only step
     const startedAt = Date.now();
     const TIMEOUT_MS = 5000; // safety net: never poll forever
     this._targetPoll = setInterval(()=>{
@@ -2055,7 +2065,7 @@ const Tutorial = {
     }, 150);
   },
 
-  _positionSpotlight(el){
+  _positionSpotlightBox(el){
     const r = el.getBoundingClientRect();
     const pad = 8;
     const spot = document.getElementById('tutorial-spotlight');
@@ -2063,7 +2073,14 @@ const Tutorial = {
     spot.style.left = Math.max(0,r.left-pad)+'px';
     spot.style.width = (r.width+pad*2)+'px';
     spot.style.height = (r.height+pad*2)+'px';
+  },
+
+  _positionSpotlight(el){
+    this._positionSpotlightBox(el);
+    const r = el.getBoundingClientRect();
+    const pad = 8;
     const tip = document.getElementById('tutorial-tooltip');
+    tip.style.bottom = '';
     tip.style.transform = '';
     const vh = window.innerHeight, vw = window.innerWidth;
     let top = r.bottom + pad + 14;
@@ -4835,4 +4852,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html> 
+</html>
