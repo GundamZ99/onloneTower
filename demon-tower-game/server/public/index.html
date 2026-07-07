@@ -2016,6 +2016,19 @@ const Tutorial = {
 
   _waitForTarget(selector){
     clearInterval(this._targetPoll);
+    clearInterval(this._posPoll);
+    if(selector === '#tutorial-next-btn'){
+      // The "next" button for desc_only steps lives inside the tooltip itself,
+      // so it can never be measured while the tooltip is hidden — show it
+      // immediately instead of polling for an element that can't appear.
+      const el = document.getElementById('tutorial-next-btn');
+      document.getElementById('tutorial-tooltip').style.display = 'block';
+      this.currentTarget = el;
+      document.getElementById('tutorial-spotlight').style.display = 'block';
+      this._positionSpotlight(el);
+      this._posPoll = setInterval(()=>this._positionSpotlight(el), 300);
+      return;
+    }
     document.getElementById('tutorial-spotlight').style.display = 'none';
     document.getElementById('tutorial-tooltip').style.display = 'none';
     const startedAt = Date.now();
@@ -4822,4 +4835,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html>
+</html> 
