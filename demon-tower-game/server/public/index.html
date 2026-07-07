@@ -435,6 +435,24 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
 .overlay-card.fantasy::after{content:'✦';position:absolute;bottom:6px;right:10px;color:var(--gold);opacity:.6;font-size:14px;}
 .overlay-card.fantasy .invite-sigil{font-size:42px;filter:drop-shadow(0 0 10px rgba(255,196,90,.7));}
 .overlay-card.fantasy h3{color:var(--gold);text-shadow:0 0 12px rgba(255,196,90,.5);}
+/* ---- Demon Tower entry warning popup ---- */
+@keyframes dtWarnGlow{0%,100%{box-shadow:0 0 18px 3px rgba(209,59,83,.45),0 10px 40px rgba(0,0,0,.7);}50%{box-shadow:0 0 36px 10px rgba(209,59,83,.8),0 10px 40px rgba(0,0,0,.7);}}
+@keyframes dtWarnPulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+.overlay-card.danger{border:2px solid var(--crimson2);position:relative;overflow:hidden;
+  animation:dtWarnGlow 1.6s ease-in-out infinite, fantasyPopIn .28s ease-out;
+  background:linear-gradient(160deg,var(--bg-panel) 55%,rgba(209,59,83,.12));}
+.overlay-card.danger::before{content:'☠';position:absolute;top:6px;left:10px;color:var(--crimson2);opacity:.7;font-size:14px;}
+.overlay-card.danger::after{content:'☠';position:absolute;bottom:6px;right:10px;color:var(--crimson2);opacity:.7;font-size:14px;}
+.overlay-card.danger .dt-warn-sigil{font-size:46px;text-align:center;filter:drop-shadow(0 0 14px rgba(209,59,83,.85));animation:dtWarnPulse 1.6s ease-in-out infinite;}
+.overlay-card.danger h3{color:var(--crimson2);text-align:center;text-shadow:0 0 14px rgba(209,59,83,.6);letter-spacing:1px;margin:6px 0 14px;}
+.dt-warn-body{background:rgba(0,0,0,.28);border:1px solid rgba(209,59,83,.4);border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.6;color:var(--text);margin-bottom:14px;}
+.dt-warn-body b{color:var(--crimson2);}
+.dt-warn-safe{display:flex;align-items:center;gap:8px;background:rgba(95,217,138,.08);border:1px solid rgba(95,217,138,.35);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--good);margin-bottom:16px;}
+.dt-warn-safe.hidden{display:none;}
+.dt-warn-btnrow{display:flex;gap:10px;}
+.dt-warn-btnrow .btn{flex:1;}
+.btn.danger-confirm{background:var(--crimson2);border:1px solid var(--crimson2);color:#fff;font-weight:700;}
+.btn.danger-confirm:active{background:var(--crimson);}
 /* ---- Friends screen ---- */
 .friend-row{display:flex;align-items:center;justify-content:space-between;padding:10px 8px;border:1px solid var(--line);border-radius:8px;margin:6px 0;background:var(--bg-panel2);}
 .friend-row .fname{display:flex;align-items:center;gap:8px;font-weight:600;}
@@ -709,7 +727,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       </div></div>
       <p class="small-text">⚠️ Permadeath: ถ้า HP เหลือ 0 ที่นี่ คุณจะสูญเสียทุกอย่างและเริ่มใหม่ที่ชั้น 1</p>
       <div class="panel" id="dt-party"></div>
-      <button class="btn primary" onclick="CoopCombat.enterFloor()">🔥 ปีนขึ้นชั้นถัดไป</button>
+      <button class="btn primary" onclick="DemonTowerWarning.show()">🔥 ปีนขึ้นชั้นถัดไป</button>
       <p class="small-text center">มีเพื่อนร่วมทีมออนไลน์ในห้อง → ต่อสู้ร่วมกันแบบเรียลไทม์กับมอนสเตอร์ตัวเดียวกันโดยอัตโนมัติ · เล่นคนเดียวได้ตามปกติถ้าไม่มีใครอยู่ในห้อง</p>
     </div>
   </div>
@@ -912,6 +930,24 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
     <div class="tab" data-s="inventory-screen" onclick="UI.goto('inventory-screen')"><span class="ic">🎒</span>กระเป๋า</div>
     <div class="tab" data-s="gacha-screen" onclick="UI.goto('gacha-screen')"><span class="ic">🎰</span>กาชา</div>
     <div class="tab" data-s="friends-screen" onclick="UI.goto('friends-screen')"><span class="ic">👥</span>เพื่อน</div>
+  </div>
+</div>
+
+<!-- ============ DEMON TOWER ENTRY WARNING OVERLAY ============ -->
+<div class="overlay" id="overlay-dt-warning">
+  <div class="overlay-card danger center">
+    <div class="dt-warn-sigil">☠️🔥</div>
+    <h3>⚠️ คำเตือน: หอคอยปีศาจ</h3>
+    <div class="dt-warn-body">
+      หอคอยนี้คือ <b>หอคอยปีศาจ</b><br>
+      หาก HP ของผู้เล่นเหลือ <b>0</b> ตัวละครของคุณจะถูก <b>ลบหายไปจากโลกทันที</b><br>
+      โปรดตรวจสอบ HP และไอเทมฮีลให้พร้อมก่อนเข้าสู้เสมอ
+    </div>
+    <div class="dt-warn-safe" id="dt-warn-party-note">🛡️ มีปาร์ตี้ร่วมทีมอยู่ — คุณจะได้รับระบบป้องกันพิเศษ</div>
+    <div class="dt-warn-btnrow">
+      <button class="btn ghost" onclick="DemonTowerWarning.cancel()">ยกเลิก</button>
+      <button class="btn danger-confirm" onclick="DemonTowerWarning.confirm()">ฉันเข้าใจแล้ว เข้าสู่หอคอย</button>
+    </div>
   </div>
 </div>
 
@@ -3419,6 +3455,22 @@ const Combat = {
 //   replayed in co-op — only base card power/element is used — since those effects assume the
 //   single-player Combat.active bookkeeping. Consumables/heal-mid-fight are also not available
 //   here yet. Both would be reasonable follow-ups.
+const DemonTowerWarning = {
+  show(){
+    const onlineParty = Object.values(Game.state.party).filter(pl=>pl.online);
+    const note = document.getElementById('dt-warn-party-note');
+    if(note) note.classList.toggle('hidden', onlineParty.length===0);
+    document.getElementById('overlay-dt-warning').classList.add('active');
+  },
+  cancel(){
+    document.getElementById('overlay-dt-warning').classList.remove('active');
+  },
+  confirm(){
+    document.getElementById('overlay-dt-warning').classList.remove('active');
+    CoopCombat.enterFloor();
+  }
+};
+
 const CoopCombat = {
   active:null,
   _tickHandle:null,
