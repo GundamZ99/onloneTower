@@ -1843,6 +1843,13 @@ const UI = {
     if(id==='multiplayer-lobby') Render.lobby();
     if(id==='pvp-screen') Render.pvpList();
     if(id==='trade-screen') Render.tradeList();
+    if(id==='title'){
+      const hasSave = !!Game.state.player;
+      const newBtns = document.getElementById('title-buttons-new');
+      const orb = document.getElementById('title-orb-returning');
+      if(newBtns) newBtns.style.display = hasSave ? 'none' : 'block';
+      if(orb) orb.style.display = hasSave ? 'block' : 'none';
+    }
     Music.playForScreen(id);
     window.scrollTo(0,0);
   }
@@ -4705,4 +4712,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html> 
+</html>  
