@@ -626,7 +626,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <button class="btn" id="btn-nav-gacha" onclick="UI.goto('gacha-screen')">🎰 กาชาอาวุธ</button>
       <button class="btn" id="btn-nav-merchant" onclick="Merchant.open('town')">🛒 พ่อค้าประจำเมือง</button>
       <button class="btn" id="btn-nav-inventory" onclick="UI.goto('inventory-screen')">🎒 กระเป๋าและอุปกรณ์</button>
-      <button class="btn ghost" id="btn-nav-friends" onclick="UI.goto('friends-screen')">👥 เพื่อน / ชวนเข้าปาร์ตี้</button>
+
       <button class="btn ghost" id="btn-nav-party" onclick="UI.goto('multiplayer-lobby')">📡 สถานะปาร์ตี้ปัจจุบัน</button>
       <div style="display:flex;gap:8px;margin-top:10px;">
         <button class="btn gold" id="btn-open-daily-login" onclick="DailyLogin.open()" style="flex:1;width:auto;margin:0;font-size:13px;padding:10px 6px;">📅 รายวัน <span id="hub-daily-badge" style="display:none;color:#ff5a5a;">●</span></button>
@@ -837,7 +837,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
 
   <!-- ============ PARTY STATUS (read-only — parties are formed via friend invites, no Host/Room ID) ============ -->
   <div class="screen" id="screen-multiplayer-lobby">
-    <div class="topbar"><span class="back" onclick="UI.goto(Game.state.player?'friends-screen':'title')">←</span><span class="title">สถานะปาร์ตี้</span><span></span></div>
+    <div class="topbar"><span class="back" onclick="UI.goto(Game.state.player?'hub':'title')">←</span><span class="title">สถานะปาร์ตี้</span><span></span></div>
     <div style="padding:10px 2px;">
       <p class="small-text">กรุณาให้เพื่อนใส่โค้ดของคุณเพื่อเชื่อมต่อ หรือคุณสามารถใส่โค้ดของเพื่อนเพื่อเข้าร่วมปาร์ตี้ได้</p>
       <div class="panel">
@@ -4712,4 +4712,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html>  
+</html> 
