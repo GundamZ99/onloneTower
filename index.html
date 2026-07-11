@@ -13,7 +13,6 @@
 <meta name="apple-mobile-web-app-title" content="Demon Tower">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --bg-void:#0b0710; --bg-panel:#161022; --bg-panel2:#1e1730; --line:#352a4a;
@@ -576,10 +575,6 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
         <div class="start-orb" onclick="Game.continueGame()"><span>เริ่มเกม</span></div>
       </div>
     </div>
-    <div id="title-login-gate">
-      <p class="small-text center">ต้องเข้าสู่ระบบเซิร์ฟเวอร์กลางก่อนจึงจะสร้างชื่อและตัวละครได้ (ผูกไอดีผู้เล่นกับบัญชี Google เพื่อเล่น PvP/ปาร์ตี้ข้ามเครื่องได้จริง)</p>
-      <button class="btn gold" onclick="UI.goto('server-login')">🔐 เข้าสู่ระบบเซิร์ฟเวอร์กลาง</button>
-    </div>
     <button class="btn ghost" id="btn-install-pwa" style="display:none;" onclick="PWA.promptInstall()">📲 ติดตั้งเป็นแอป (Add to Home Screen)</button>
     <p class="small-text center" style="margin-top:18px;">v3.0 — ต้องล็อกอินเซิร์ฟเวอร์กลางก่อนเข้าเกมเสมอ</p>
     <p class="small-text center"><a href="privacy.html" target="_blank" style="color:var(--text-dim);text-decoration:underline;">นโยบายความเป็นส่วนตัว / Privacy Policy</a></p>
@@ -593,89 +588,6 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <input type="text" id="input-charname" placeholder="ตั้งชื่อตัวละครของคุณ" maxlength="16">
       <button class="btn gold" id="btn-roll-fate" onclick="Game.rollNewCharacter()">🎲 หว่านเมล็ดพันธุ์แห่งโชคชะตา</button>
       <div id="roll-result"></div>
-    </div>
-  </div>
-
-  <!-- ============ SERVER LOGIN (server-authoritative backend) ============ -->
-  <div class="screen" id="screen-server-login">
-    <div class="topbar"><span class="back" onclick="UI.goto('title')">←</span><span class="title">เซิร์ฟเวอร์กลาง</span><span></span></div>
-    <div style="padding:14px 2px;">
-      <p class="small-text" id="server-login-status">กำลังเชื่อมต่อเซิร์ฟเวอร์...</p>
-      <p class="small-text center">ล็อกอินด้วย Google เพื่อบันทึกตัวละครและเล่น PvP ข้ามเครื่องได้ (ไอดีผู้เล่นผูกกับบัญชี Google เท่านั้น)</p>
-      <div id="google-signin-btn" style="margin:14px 0;"></div>
-      <div class="divider"></div>
-      <p class="small-text" id="server-login-me" style="display:none;"></p>
-      <button class="btn ghost" id="btn-server-logout" style="display:none;" onclick="ServerAuth.logout()">ออกจากระบบ</button>
-      <button class="btn gold" id="btn-server-continue" style="display:none;" onclick="ServerAuth._refreshTitleScreen(); UI.goto('title');">⚔️ เข้าเกม</button>
-      <button class="btn" id="btn-server-friends" style="display:none;" onclick="UI.goto('friends-screen')">👥 รายชื่อเพื่อน</button>
-    </div>
-  </div>
-
-  <!-- ============ FRIENDS LIST ============ -->
-  <div class="screen" id="screen-friends-screen">
-    <div class="topbar"><span class="back" onclick="UI.goto('hub')">←</span><span class="title">เพื่อน</span><span></span></div>
-    <div style="padding:10px 2px;">
-      <div id="friends-login-required" style="display:none;">
-        <p class="small-text">ต้องเข้าสู่ระบบเซิร์ฟเวอร์กลางก่อนถึงจะเพิ่มเพื่อนและเชิญปาร์ตี้ได้</p>
-        <button class="btn gold" onclick="UI.goto('server-login')">🔐 เข้าสู่ระบบ</button>
-      </div>
-      <div id="friends-main-wrap">
-        <div class="panel">
-          <div class="eyebrow">ค้นหาเพื่อน</div>
-          <input type="text" id="input-friend-search" placeholder="พิมพ์ชื่อผู้ใช้ (ค้นหาแบบไม่ต้องพิมพ์เต็ม)" oninput="Friends.onSearchInput()">
-          <div id="friend-search-results"></div>
-        </div>
-        <div id="friend-requests-wrap"></div>
-        <div class="divider"></div>
-        <p class="small-text">รายชื่อเพื่อน (จุดเขียว = ออนไลน์อยู่ตอนนี้ — เชิญเข้าปาร์ตี้ได้เลย)</p>
-        <div id="friend-list-wrap"></div>
-        <div class="divider"></div>
-        <p class="small-text">ผู้เล่นที่ถูกบล็อก (จะขอเพิ่มเพื่อน/ท้าดวล/เชิญปาร์ตี้กับคุณไม่ได้)</p>
-        <div id="blocked-list-wrap"></div>
-        <div class="divider"></div>
-        <button class="btn small" onclick="UI.goto('multiplayer-lobby')">📡 สถานะปาร์ตี้ปัจจุบัน</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ ONLINE PVP LOBBY (server-authoritative) ============ -->
-  <div class="screen" id="screen-server-pvp-screen">
-    <div class="topbar"><span class="back" onclick="UI.goto('server-login')">←</span><span class="title">ดวล PvP (เซิร์ฟเวอร์กลาง)</span><span></span></div>
-    <div style="padding:10px 2px;">
-      <p class="small-text">ผลการดวลทั้งหมดตัดสินที่เซิร์ฟเวอร์ ไม่ใช่เครื่องผู้เล่น — พิมพ์ชื่อผู้ใช้ของคู่ต่อสู้ (ต้องออนไลน์อยู่) แล้วกดท้าดวล</p>
-      <input type="text" id="input-pvp-target" placeholder="ชื่อผู้ใช้คู่ต่อสู้">
-      <button class="btn primary" onclick="ServerPvp.challenge()">⚔️ ท้าดวล</button>
-      <div class="divider"></div>
-      <button class="btn small" onclick="ServerAuth.setDemoDeck()">🃏 ตั้งเด็คทดสอบ (สำหรับทดลองเล่น)</button>
-      <p class="small-text" id="server-pvp-lobby-status"></p>
-    </div>
-  </div>
-
-  <!-- ============ ONLINE PVP COMBAT (server-authoritative) ============ -->
-  <div class="screen" id="screen-server-pvp-combat">
-    <div class="topbar"><span class="back" onclick="ServerPvp.leave()">✕</span><span class="title">ดวล PvP (เซิร์ฟเวอร์กลาง)</span><span></span></div>
-    <div style="padding:8px 2px;">
-      <div class="battle-sticky-top">
-        <div class="pvp-vs">
-          <div class="side">
-            <div class="small-text" id="spvp-my-name">คุณ</div>
-            <div class="hpbar-wrap"><div class="hpbar" id="spvp-my-hpbar" style="width:100%"></div>
-              <div class="hpbar-label" id="spvp-my-hplabel"></div></div>
-          </div>
-          <div class="vs">VS</div>
-          <div class="side">
-            <div class="small-text" id="spvp-opp-name">คู่ต่อสู้</div>
-            <div class="hpbar-wrap"><div class="hpbar" id="spvp-opp-hpbar" style="width:100%"></div>
-              <div class="hpbar-label" id="spvp-opp-hplabel"></div></div>
-            <button class="btn small" style="width:auto;padding:0 8px;margin-top:4px;" onclick="ServerPvp.reportOpponent()">🚩 รายงาน</button>
-          </div>
-        </div>
-      </div>
-      <div class="center small-text" id="spvp-status">เลือกการ์ดของคุณ</div>
-      <div class="log" id="spvp-log"></div>
-      <div class="divider"></div>
-      <div id="spvp-hand"></div>
-      <button class="btn primary" id="btn-spvp-lock" onclick="ServerPvp.lock()" disabled>🔒 ล็อกการ์ด</button>
     </div>
   </div>
 
@@ -709,7 +621,6 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
       <button class="btn ghost" id="btn-nav-party" onclick="UI.goto('multiplayer-lobby')">📡 สถานะปาร์ตี้ปัจจุบัน</button>
       <div style="display:flex;gap:8px;margin-top:10px;">
         <button class="btn gold" id="btn-open-daily-login" onclick="DailyLogin.open()" style="flex:1;width:auto;margin:0;font-size:13px;padding:10px 6px;">📅 รายวัน <span id="hub-daily-badge" style="display:none;color:#ff5a5a;">●</span></button>
-        <button class="btn ghost" id="btn-hub-logout" onclick="ServerAuth.logoutFromHub()" style="flex:1;width:auto;margin:0;font-size:13px;padding:10px 6px;color:var(--bad);border-color:rgba(255,90,110,.35);">🚪 ออกจากระบบ</button>
       </div>
     </div>
   </div>
@@ -919,7 +830,7 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
   <div class="screen" id="screen-multiplayer-lobby">
     <div class="topbar"><span class="back" onclick="UI.goto(Game.state.player?'friends-screen':'title')">←</span><span class="title">สถานะปาร์ตี้</span><span></span></div>
     <div style="padding:10px 2px;">
-      <p class="small-text">ปาร์ตี้จะเกิดขึ้นเมื่อคุณเชิญเพื่อนที่ออนไลน์อยู่จากหน้า "เพื่อน" เท่านั้น — ไม่มีการสร้างห้องหรือกำหนดใครเป็น Host อีกต่อไป ระบบเซิร์ฟเวอร์กลางจะจับคู่และเชื่อมต่อให้อัตโนมัติ</p>
+      <p class="small-text">กรุณาให้เพื่อนใส่โค้ดของคุณเพื่อเชื่อมต่อ หรือคุณสามารถใส่โค้ดของเพื่อนเพื่อเข้าร่วมปาร์ตี้ได้</p>
       <div class="panel">
         <div class="eyebrow">สถานะเครือข่าย</div>
         <div id="net-status" style="font-weight:700;">กำลังตรวจสอบ...</div>
@@ -927,11 +838,18 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
         <button class="btn small" onclick="Net.retry()">🔄 เชื่อมต่อใหม่</button>
       </div>
       <div class="panel">
+        <div class="eyebrow">เชื่อมต่อด้วยโค้ด (ออฟไลน์โหมด)</div>
+        <div class="small-text" style="margin-bottom:8px;">โค้ดของคุณ: <strong id="my-peer-id" style="color:var(--gold); user-select:text;">กำลังดึงโค้ด...</strong></div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="input-join-code" placeholder="ใส่โค้ดของเพื่อนที่นี่" style="flex:1;">
+          <button class="btn primary" style="width:auto; margin:0; font-size:13px;" onclick="Net.joinByCode()">🔗 เชื่อมต่อ</button>
+        </div>
+      </div>
+      <div class="panel">
         <div class="eyebrow">ผู้เล่นในปาร์ตี้</div>
         <div id="lobby-playerlist" class="small-text">ยังไม่มีการเชื่อมต่อ</div>
       </div>
-      <button class="btn gold" onclick="UI.goto('friends-screen')">👥 เชิญเพื่อนเข้าปาร์ตี้</button>
-      <p class="small-text">หมายเหตุ: หลังจับคู่กันผ่านเซิร์ฟเวอร์กลางแล้ว ข้อมูลระหว่างเล่นจะส่งตรงระหว่างเครื่อง (WebRTC/P2P) เพื่อความหน่วงต่ำ — เซิร์ฟเวอร์กลางทำหน้าที่ล็อกอิน จับคู่ และเป็นเจ้าของข้อมูลตัวละคร/PvP เท่านั้น</p>
+      <p class="small-text">หมายเหตุ: หลังเชื่อมต่อสำเร็จแล้ว ข้อมูลระหว่างเล่นจะส่งตรงระหว่างเครื่อง (WebRTC/P2P) เพื่อความหน่วงต่ำ</p>
       <div class="divider"></div>
       <button class="btn gold" onclick="Game.saveAndExit()">💾 บันทึกเกมและออกจากห้อง</button>
     </div>
@@ -1887,18 +1805,18 @@ const Game = {
 const UI = {
   current:'title',
   startNewJourney(){
-    if(!ServerAuth.token){ Toast.show('ต้องเข้าสู่ระบบเซิร์ฟเวอร์กลางก่อนจึงจะสร้างตัวละครได้'); this.goto('server-login'); return; }
+    
     if(Game.state.player){ Toast.show('คุณมีตัวละครที่ยังเดินทางอยู่แล้ว — สุ่มใหม่ได้ก็ต่อเมื่อตัวละครตายหรือพิชิตหอคอยสำเร็จเท่านั้น'); this.goto('hub'); return; }
     this.goto('char-create');
   },
   goto(id){
-    if(id==='char-create' && !ServerAuth.token){ Toast.show('ต้องเข้าสู่ระบบเซิร์ฟเวอร์กลางก่อนจึงจะสร้างตัวละครได้'); id='server-login'; }
+    
     if(id==='char-create' && Game.state.player){ Toast.show('คุณมีตัวละครที่ยังเดินทางอยู่แล้ว ไม่สามารถสุ่มใหม่ได้'); id='hub'; }
     if(id==='friends-screen'){
-      const loggedIn = !!(ServerAuth.socket && ServerAuth.socket.connected);
-      document.getElementById('friends-login-required').style.display = loggedIn ? 'none' : 'block';
-      document.getElementById('friends-main-wrap').style.display = loggedIn ? 'block' : 'none';
-      if(loggedIn) ServerAuth.socket.emit('friend_list_request');
+      document.getElementById('friends-login-required').style.display = 'none';
+      document.getElementById('friends-main-wrap').style.display = 'block';
+      Friends._load();
+      Friends.render();
     }
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const el = document.getElementById('screen-'+id); if(!el) return;
@@ -2620,14 +2538,16 @@ const Render = {
     const statusLabel = {idle:'⏳ ยังไม่เริ่ม',connecting:'⏳ กำลังเชื่อมต่อ...',ready:'🟢 พร้อมใช้งาน',error:'🔴 เชื่อมต่อล้มเหลว',disconnected:'🟠 หลุดการเชื่อมต่อ',unavailable:'🔴 ไม่พร้อมใช้งาน'}[Net.status] || Net.status;
     document.getElementById('net-status').textContent = statusLabel;
     document.getElementById('net-error').textContent = Net.lastError ? 'สาเหตุ: '+Net.lastError+' — หากดูอยู่ในพรีวิวแชท ให้ดาวน์โหลดไฟล์ไปเปิดในเบราว์เซอร์จริงแทน' : '';
+    const myCodeEl = document.getElementById('my-peer-id');
+    if(myCodeEl) myCodeEl.textContent = Net.peerId ? Net.peerId : 'กำลังดึงโค้ด...';
     const entries = Object.values(Game.state.party);
     document.getElementById('lobby-playerlist').innerHTML = entries.length ? entries.map(p=>`<div><span class="playerpip ${p.online===false?'off':''}"></span>${p.name||'ผู้เล่นไม่ทราบชื่อ'}</div>`).join('') : 'ยังไม่มีการเชื่อมต่อ';
   },
   pvpList(){
-    const entries = Object.values(Game.state.party);
+    const entries = Object.values(Game.state.party).filter(p => p.id !== (Game.state.player ? Game.state.player.id : null));
     document.getElementById('pvp-playerlist').innerHTML = entries.length ? entries.map(p=>`
       <div class="btn" onclick="Combat.challengePvp('${p.id}')">⚔️ ท้าดวลกับ ${p.name||'ผู้เล่น'}</div>`).join('') :
-      '<p class="small-text">ยังไม่มีผู้เล่นอื่นในปาร์ตี้ — ไปที่หน้า "เพื่อน" เพื่อเชิญเพื่อนที่ออนไลน์อยู่เข้าปาร์ตี้ก่อน</p>';
+      '<p class="small-text">ยังไม่มีผู้เล่นอื่นในปาร์ตี้ — ไปที่หน้า "สถานะปาร์ตี้ปัจจุบัน" และใส่โค้ดเชื่อมต่อก่อน</p>';
   },
   tradeList(){
     const entries = Object.values(Game.state.party);
@@ -4424,11 +4344,13 @@ const Trade = {
 // Fix: generate our OWN short id (e.g. "dt-a1b2c3") once, save it in localStorage, and
 // ask PeerJS to use exactly that id every time — reloading the page just reuses the same
 // short id from storage instead of getting handed a new long one.
-const PEER_ID_KEY = 'demonTowerPeerId';
+const PEER_ID_KEY = 'demonTowerPeerId_v2';
 function getStablePeerId(forceNew){
   let id = forceNew ? null : localStorage.getItem(PEER_ID_KEY);
   if(!id){
-    id = 'dt-' + Math.random().toString(36).slice(2,8);
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    id = '';
+    for(let i=0; i<5; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
     localStorage.setItem(PEER_ID_KEY, id);
   }
   return id;
@@ -4488,6 +4410,25 @@ const Net = {
     }catch(e){ this.status='error'; this.lastError = e.message||String(e); console.warn('PeerJS unavailable', e); Render.lobby(); }
   },
   retry(){ if(this.peer){ try{ this.peer.destroy(); }catch(e){} } this.conns={}; this.init(); Toast.show('กำลังลองเชื่อมต่อใหม่...'); },
+  joinByCode(){
+    const input = document.getElementById('input-join-code');
+    if(!input) return;
+    const code = input.value.trim();
+    if(!code) return Toast.show('กรุณาใส่โค้ดของเพื่อน');
+    if(code === this.peerId) return Toast.show('ไม่สามารถเชื่อมต่อตัวเองได้');
+    if(!this.peer || this.status !== 'ready') return Toast.show('เครือข่ายยังไม่พร้อม (โปรดรอหรือกดเชื่อมต่อใหม่)');
+    Toast.show('กำลังเชื่อมต่อไปยัง ' + code + '...');
+    this.isHost = false; 
+    this.hostId = code;
+    const conn = this.peer.connect(code);
+    conn.on('open', ()=>{ 
+      this.wireConn(conn); 
+      this.sendTo(code, Object.assign({type:'hello'}, this.myStatPayload())); 
+      Toast.show('✨ เข้าร่วมปาร์ตี้สำเร็จ!');
+      input.value = '';
+    });
+    conn.on('error', err=>Toast.show('เข้าร่วมปาร์ตี้ไม่สำเร็จ: '+(err.type||err.message||'unknown')));
+  },
   // หมายเหตุ: เดิมมี copyPeerId()/hostGame()/joinGame() ให้ผู้เล่นกด "สร้างห้อง (Host)"
   // แล้วแชร์ Room ID เอง — ระบบนั้นถูกถอดออกทั้งหมดแล้ว ตอนนี้การจับคู่ peer ทำผ่าน
   // เซิร์ฟเวอร์กลางเท่านั้น (ดู Friends.inviteToParty ฝั่ง server และ event
@@ -4597,196 +4538,6 @@ const Net = {
 // ตั้งค่านี้เป็น URL ของ server ที่รันจาก demon-tower-server/ (ดู README ของ server)
 // ตอนทดสอบในเครื่องตัวเองใช้ http://localhost:3000 ได้เลย ตอน deploy จริงเปลี่ยนเป็น URL จริง
 const SERVER_URL = 'https://onlonetower-production.up.railway.app';
-// ต้องไปสร้าง OAuth Client ID ที่ https://console.cloud.google.com/apis/credentials เลือก "Web application"
-// แล้วเอา Client ID (ลงท้ายด้วย .apps.googleusercontent.com) มาแทนค่านี้ — ดูขั้นตอนละเอียดใน README
-const GOOGLE_CLIENT_ID = '960385917049-rp5mrm9540u9r5gv98chg571tfsss3is.apps.googleusercontent.com';
-
-const ServerAuth = {
-  socket:null, token:null, username:null,
-  init(){
-    this.token = 'offline_mode';
-    this.username = 'OfflinePlayer';
-    this._refreshLoginScreen();
-    this._refreshTitleScreen();
-    if(this.token) this._connectSocket();
-    this._initGoogleButton();
-  },
-  _refreshTitleScreen(){
-    // ต้องล็อกอินเซิร์ฟเวอร์กลางก่อนเสมอ ถึงจะเข้าเกม (สร้างตัวละคร/เล่นต่อ) ได้
-    // ยังไม่ล็อกอิน -> โชว์แค่ประตูล็อกอินอย่างเดียว
-    // ล็อกอินแล้ว + มีเซฟตัวละครอยู่ในเครื่องนี้ -> โชว์ปุ่มวงกลม "เริ่มเกม" (เล่นต่อ)
-    // ล็อกอินแล้ว + ยังไม่มีเซฟ -> โชว์ปุ่ม "เริ่มการเดินทางใหม่"
-    const loggedIn = !!this.token;
-    const hasSave = !!localStorage.getItem(typeof SAVE_KEY !== 'undefined' ? SAVE_KEY : 'demonTowerSave');
-    const gate = document.getElementById('title-login-gate');
-    const newBtns = document.getElementById('title-buttons-new');
-    const orb = document.getElementById('title-orb-returning');
-    if(gate) gate.style.display = loggedIn ? 'none' : 'block';
-    if(newBtns) newBtns.style.display = (loggedIn && !hasSave) ? 'block' : 'none';
-    if(orb) orb.style.display = (loggedIn && hasSave) ? 'block' : 'none';
-  },
-  _initGoogleButton(){
-    if(typeof google === 'undefined' || !google.accounts){
-      // สคริปต์ Google ยังโหลดไม่เสร็จ (async) — ลองใหม่อีกครั้งสักครู่
-      setTimeout(()=>this._initGoogleButton(), 400);
-      return;
-    }
-    if(GOOGLE_CLIENT_ID.startsWith('YOUR_')){
-      document.getElementById('google-signin-btn').innerHTML = '<p class="small-text" style="color:var(--bad);">⚠️ ยังไม่ได้ตั้งค่า Google Client ID (ดู README)</p>';
-      return;
-    }
-    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: (resp)=>this._onGoogleCredential(resp) });
-    google.accounts.id.renderButton(document.getElementById('google-signin-btn'), { theme:'filled_black', size:'large', shape:'pill', width:280 });
-  },
-  async _onGoogleCredential(response){
-    try{
-      const res = await fetch(SERVER_URL+'/api/auth/google', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({idToken:response.credential})});
-      const data = await res.json();
-      if(!res.ok) return Toast.show('❌ '+(data.error||'ล็อกอิน Google ไม่สำเร็จ'));
-      this._onAuthed(data.token, data.username);
-      Toast.show('✅ เข้าสู่ระบบด้วย Google สำเร็จ');
-    }catch(e){ Toast.show('❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: '+e.message); }
-  },
-  _onAuthed(token, username){
-    this.token = token; this.username = username;
-    localStorage.setItem('dt_token', token); localStorage.setItem('dt_username', username);
-    this._refreshLoginScreen();
-    this._refreshTitleScreen();
-    this._connectSocket();
-  },
-  logout(){
-    if(this.socket){ try{ this.socket.disconnect(); }catch(e){} }
-    this.socket = null; this.token = null; this.username = null;
-    localStorage.removeItem('dt_token'); localStorage.removeItem('dt_username');
-    this._refreshLoginScreen();
-    this._refreshTitleScreen();
-    const statusEl = document.getElementById('server-login-status');
-    if(statusEl) statusEl.textContent = 'ออกจากระบบแล้ว';
-    const friendsBtn = document.getElementById('btn-server-friends');
-    if(friendsBtn) friendsBtn.style.display = 'none';
-  },
-  /* Logout triggered from inside the Hub (in-game), where the player still has
-     an active character on screen — confirm first so a stray tap can't kick
-     them out mid-session, then drop back to the title screen. */
-  async logoutFromHub(){
-    const ok = await ConfirmDialog.ask('ต้องการออกจากระบบใช่หรือไม่? ตัวละครของคุณจะยังถูกบันทึกไว้ในเครื่องนี้ สามารถล็อกอินกลับเข้ามาเล่นต่อได้ทุกเมื่อ');
-    if(!ok) return;
-    this.logout();
-    Toast.show('🚪 ออกจากระบบแล้ว');
-    UI.goto('title');
-  },
-  _connectSocket(){
-    return; // OFFLINE MODE BYPASS
-    if(typeof io === 'undefined'){ Toast.show('ไม่สามารถโหลดไลบรารี Socket.io ได้'); return; }
-    if(this.socket) try{ this.socket.disconnect(); }catch(e){}
-    this.socket = io(SERVER_URL, { auth:{ token:this.token } });
-    this.socket.on('connect', ()=>{ document.getElementById('server-login-status').textContent = '🟢 เชื่อมต่อเซิร์ฟเวอร์แล้ว'; });
-    this.socket.on('connect_error', (err)=>{ document.getElementById('server-login-status').textContent = '🔴 เชื่อมต่อล้มเหลว: '+err.message; });
-    this.socket.on('disconnect', ()=>{ document.getElementById('server-login-status').textContent = '🔴 หลุดการเชื่อมต่อเซิร์ฟเวอร์'; });
-    // ผูก event ของ PvP เซิร์ฟเวอร์กลางเข้ากับ socket ทันทีที่เชื่อมต่อ
-    ServerPvp.wire(this.socket);
-    Friends.wire(this.socket);
-    document.getElementById('btn-server-friends').style.display = 'block';
-  },
-  async setDemoDeck(){
-    if(!this.token) return Toast.show('ต้องเข้าสู่ระบบก่อน');
-    try{
-      const res = await fetch(SERVER_URL+'/api/debug/set-demo-deck', {method:'POST', headers:{'Authorization':'Bearer '+this.token}});
-      const data = await res.json();
-      if(!res.ok) return Toast.show('❌ '+(data.error||'ตั้งเด็คไม่สำเร็จ'));
-      Toast.show('🃏 ตั้งเด็คทดสอบแล้ว: '+data.deck.map(c=>c.name).join(', '));
-    }catch(e){ Toast.show('❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: '+e.message); }
-  },
-  _refreshLoginScreen(){
-    const loggedIn = !!this.token;
-    const me = document.getElementById('server-login-me');
-    const logoutBtn = document.getElementById('btn-server-logout');
-    const continueBtn = document.getElementById('btn-server-continue');
-    if(me){ me.style.display = loggedIn?'block':'none'; me.textContent = loggedIn?('เข้าสู่ระบบเป็น: '+this.username):''; }
-    if(logoutBtn) logoutBtn.style.display = loggedIn?'block':'none';
-    if(continueBtn) continueBtn.style.display = loggedIn?'block':'none';
-  }
-};
-
-const ServerPvp = {
-  state:null, // {matchId, myDeck, mySelIndex, locked}
-  wire(socket){
-    socket.on('pvp_matched', (d)=>{
-      this.state = { matchId:d.matchId, myName:d.myName, oppName:d.oppName, myHp:d.myHp, myMax:d.myMax,
-        oppHp:d.oppHp, oppMax:d.oppMax, myDeck:d.myDeck, mySelIndex:null, locked:false, log:[] };
-      UI.goto('server-pvp-combat');
-      this.render();
-      Toast.show('⚔️ จับคู่ดวลกับ '+d.oppName+' แล้ว!');
-    });
-    socket.on('pvp_round_result', (d)=>{
-      if(!this.state) return;
-      const st = this.state;
-      st.myHp = d.myHp; st.oppHp = d.oppHp; st.locked = false; st.mySelIndex = null;
-      const diceLine = `🎲 คุณทอย ${d.mine.diceNumber}/20 · คู่ต่อสู้ทอย ${d.theirs.diceNumber}/20 — `;
-      let msg;
-      if(d.mine.success && d.theirs.success) msg = diceLine+`ยกที่ ${d.round}: ทั้งคู่หลบได้พร้อมกัน ไม่มีดาเมจ`;
-      else if(!d.mine.success && !d.theirs.success) msg = diceLine+`ยกที่ ${d.round}: ทั้งคู่พลาดท่า ไม่มีดาเมจ`;
-      else if(d.mine.success) msg = diceLine+`ยกที่ ${d.round}: คุณโจมตีติด ${d.dmgToOpp} ดาเมจ!`;
-      else msg = diceLine+`ยกที่ ${d.round}: คู่ต่อสู้โจมตีติด คุณรับ ${d.dmgToMe} ดาเมจ`;
-      st.log.unshift(msg);
-      this.render();
-    });
-    socket.on('pvp_end', (d)=>{
-      const map = {win:'🏆 คุณชนะการดวล!', lose:'💀 คุณพ่ายแพ้ในการดวล', draw:'🤝 เสมอกัน!', opponent_disconnected:'⚠️ คู่ต่อสู้หลุดการเชื่อมต่อ'};
-      Toast.show((map[d.result]||d.result)+' (ไม่มีการสูญเสียถาวรจาก PvP)');
-      this.state = null;
-      setTimeout(()=>UI.goto('server-pvp-screen'), 1200);
-    });
-    socket.on('pvp_error', (d)=>{ Toast.show('❌ '+d.message); });
-  },
-  challenge(){
-    if(!ServerAuth.socket || !ServerAuth.socket.connected) return Toast.show('ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์');
-    const targetUsername = document.getElementById('input-pvp-target').value.trim();
-    if(!targetUsername) return Toast.show('กรุณาใส่ชื่อผู้ใช้คู่ต่อสู้');
-    ServerAuth.socket.emit('pvp_challenge', { targetUsername });
-    document.getElementById('server-pvp-lobby-status').textContent = 'กำลังส่งคำท้าดวล...';
-  },
-  selectCard(i){
-    if(!this.state || this.state.locked) return;
-    this.state.mySelIndex = i;
-    this.render();
-  },
-  lock(){
-    if(!this.state || this.state.mySelIndex==null || this.state.locked) return;
-    this.state.locked = true;
-    ServerAuth.socket.emit('pvp_select_card', { cardIndex:this.state.mySelIndex });
-    document.getElementById('spvp-status').textContent = '⏳ รอคู่ต่อสู้ล็อกการ์ด...';
-    document.getElementById('btn-spvp-lock').disabled = true;
-  },
-  leave(){
-    if(ServerAuth.socket) ServerAuth.socket.emit('pvp_leave');
-    this.state = null;
-    UI.goto('server-pvp-screen');
-  },
-  reportOpponent(){
-    if(!this.state || !this.state.oppName) return;
-    ReportModal.open(this.state.oppName);
-  },
-  render(){
-    const st = this.state; if(!st) return;
-    document.getElementById('spvp-my-name').textContent = st.myName+' (คุณ)';
-    document.getElementById('spvp-opp-name').textContent = st.oppName;
-    document.getElementById('spvp-my-hpbar').style.width = pct(st.myHp, st.myMax)+'%';
-    document.getElementById('spvp-my-hplabel').textContent = `${Math.max(0,st.myHp)}/${st.myMax}`;
-    document.getElementById('spvp-opp-hpbar').style.width = pct(st.oppHp, st.oppMax)+'%';
-    document.getElementById('spvp-opp-hplabel').textContent = `${Math.max(0,st.oppHp)}/${st.oppMax}`;
-    document.getElementById('spvp-hand').innerHTML = '<div class="hand-grid">' + st.myDeck.map((c,i)=>`
-      <div class="card ${st.mySelIndex===i?'selected':''} ${st.locked?'disabled':''}" onclick="${st.locked?'':'ServerPvp.selectCard('+i+')'}">
-        <span class="cname">${c.name}</span><span class="cpower">PWR ${c.power}</span>
-        <div class="elem-tag ${ELEM_CLASS[c.element]}">${ELEM_NAME[c.element]}</div>
-      </div>`).join('') + '</div>';
-    document.getElementById('spvp-log').innerHTML = st.log.slice(0,30).map(l=>`<div>${l}</div>`).join('');
-    if(!st.locked) document.getElementById('spvp-status').textContent = 'เลือกการ์ดแล้วกดล็อก';
-    document.getElementById('btn-spvp-lock').disabled = st.mySelIndex==null || st.locked;
-  }
-};
-
-
 /* ---------------------------------- FRIEND LIST + PARTY INVITES (server-authoritative presence) ---------------------------------- */
 // สถานะออนไลน์/รายชื่อเพื่อนต้องพึ่งเซิร์ฟเวอร์กลาง (Socket.io) เพราะ PeerJS ล้วน ๆ
 // ไม่มีทางรู้ว่าเพื่อนที่ยังไม่ได้ต่อ P2P ด้วยกันตอนนี้ออนไลน์อยู่ไหม — ตัวปาร์ตี้จริง
@@ -4939,11 +4690,10 @@ window.addEventListener('DOMContentLoaded', ()=>{
   PWA.init();
   Game.init();
   Net.init();
-  ServerAuth.init();
   Music.init();
   UI.goto('title');
 });
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html> 
+</html>  
