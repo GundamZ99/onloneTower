@@ -543,10 +543,19 @@ textarea{width:100%;min-height:70px;background:var(--bg-panel);border:1px solid 
 }
 .tut-shake{ animation:tutShake .35s ease; }
 @keyframes tutShake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } }
 </style>
 </head>
 <body>
 <div id="app">
+
+  <div class="overlay active" id="overlay-click-start" onclick="this.classList.remove('active');" style="z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);cursor:pointer;">
+    <div class="overlay-card center" style="background:transparent;box-shadow:none;border:none;">
+      <h2 style="color:var(--gold);animation:pulse 2s infinite;">แตะหน้าจอเพื่อเริ่มเกม</h2>
+      <p class="small-text">(Tap anywhere to start)</p>
+    </div>
+  </div>
+
 
   <!-- ============ TITLE ============ -->
   <div class="screen active" id="screen-title">
@@ -4696,4 +4705,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
 window.addEventListener('beforeunload', ()=>{ if(Game.state && Game.state.player) Game.save(); });
 </script>
 </body>
-</html>  
+</html> 
