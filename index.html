@@ -4794,40 +4794,39 @@ const ServerPvp = {
 // บอกสถานะ แล้วส่ง Peer ID ของผู้เชิญแนบไปกับคำเชิญ เพื่อให้ฝั่งเพื่อนกดยืนยันแล้วต่อ P2P เองทันที
 const Friends = {
   list: [], incoming: [], blocked: [], pendingInvite: null, _searchTimer: null,
-  wire(socket){
-    socket.emit('friend_list_request');
-    socket.emit('friend_set_peer_id', { peerId: Net.peerId || null });
-    socket.emit('block_list_request');
-    socket.on('friend_list', (d)=>{ this.list = d.friends||[]; this.incoming = d.incoming||[]; this.render(); });
-    socket.on('block_list', (d)=>{ this.blocked = d||[]; this.render(); });
-    socket.on('report_sent', ()=>Toast.show('🚩 ส่งรายงานแล้ว ขอบคุณที่ช่วยดูแลชุมชนของเรา'));
-    socket.on('friend_search_results', (d)=>this.renderSearchResults(d.results||[]));
-    socket.on('friend_error', (d)=>Toast.show('❌ '+d.message));
-    socket.on('friend_request_incoming', (d)=>{
-      Toast.show('👤 '+d.username+' ขอเพิ่มเป็นเพื่อน');
-      socket.emit('friend_list_request');
-    });
-    socket.on('friend_request_accepted', (d)=>{
-      Toast.show('✅ '+d.username+' ตอบรับคำขอเป็นเพื่อนแล้ว');
-      socket.emit('friend_list_request');
-    });
-    socket.on('friend_presence', ()=>socket.emit('friend_list_request'));
-    socket.on('party_invite', (d)=>this.onInviteReceived(d));
-    socket.on('party_invite_sent', ()=>Toast.show('📨 ส่งคำเชิญเข้าปาร์ตี้แล้ว'));
-    // เมื่อ PeerJS ได้ Peer ID (หรือได้ใหม่หลังรีคอนเนกต์) อัปเดตให้เซิร์ฟเวอร์กลางรู้เสมอ
-    // เพื่อให้คำเชิญปาร์ตี้ที่ส่งออกไปแนบ Peer ID ที่ใช้งานได้จริงอยู่เสมอ
-    const origLobbyRender = Render.lobby.bind(Render);
-    Render.lobby = (...args)=>{ if(ServerAuth.socket && ServerAuth.socket.connected) ServerAuth.socket.emit('friend_set_peer_id', { peerId: Net.peerId||null }); return origLobbyRender(...args); };
+  
+  _save() {
+    localStorage.setItem('dt_offline_friends', JSON.stringify({
+      list: this.list,
+      blocked: this.blocked
+    }));
   },
-  // ---------- ค้นหาเพื่อน (พิมพ์แล้วค้นหาแบบ debounce แทนการพิมพ์ชื่อเต็ม ๆ เพื่อกดเพิ่มทันที) ----------
+  _load() {
+    try {
+      const data = JSON.parse(localStorage.getItem('dt_offline_friends') || '{"list":[],"blocked":[]}');
+      this.list = data.list || [];
+      this.blocked = data.blocked || [];
+    } catch(e) {
+      this.list = []; this.blocked = [];
+    }
+  },
+  
+  wire(socket){
+    this._load();
+    this.render();
+  },
   onSearchInput(){
     clearTimeout(this._searchTimer);
     const q = document.getElementById('input-friend-search').value.trim();
     const resultsEl = document.getElementById('friend-search-results');
     if(!q){ resultsEl.innerHTML = ''; return; }
     this._searchTimer = setTimeout(()=>{
-      if(!ServerAuth.socket || !ServerAuth.socket.connected) return;
-      ServerAuth.socket.emit('friend_search', { query:q });
+      const isBlocked = this.blocked.find(b => b.username === q);
+      const isFriend = this.list.find(f => f.username === q);
+      let status = 'none';
+      if(isBlocked) status = 'blocked';
+      else if(isFriend) status = 'friend';
+      this.renderSearchResults([{id: Date.now(), username: q, status}]);
     }, 300);
   },
   renderSearchResults(results){
@@ -4837,10 +4836,9 @@ const Friends = {
     resultsEl.innerHTML = results.map(r=>{
       let action;
       if(r.status==='friend') action = '<span class="small-text">เป็นเพื่อนกันแล้ว</span>';
-      else if(r.status==='pending_sent') action = '<span class="small-text">ส่งคำขอแล้ว รอตอบรับ</span>';
-      else if(r.status==='pending_incoming') action = `<button class="btn gold small" style="width:auto;padding:0 10px;" onclick="Friends.respond(${r.id}, true)">ตอบรับคำขอ</button>`;
-      else action = `<button class="btn gold small" style="width:auto;padding:0 10px;" onclick="Friends.sendRequestTo(${r.id}, '${r.username.replace(/'/g,"\\'")}')">➕ เพิ่มเพื่อน</button>`;
-      const uname = r.username.replace(/'/g,"\\'");
+      else if(r.status==='blocked') action = '<span class="small-text">ผู้เล่นนี้ถูกบล็อกอยู่</span>';
+      else action = `<button class="btn gold small" style="width:auto;padding:0 10px;" onclick="Friends.sendRequestTo(${r.id}, '${r.username.replace(/'/g,"\\'").replace(/"/g, "&quot;")}')">➕ เพิ่มเพื่อน</button>`;
+      const uname = r.username.replace(/'/g,"\\'").replace(/"/g, "&quot;");
       return `<div class="friend-row"><span class="fname">${r.username}</span><div class="factions">${action}
         <button class="btn small" style="width:auto;padding:0 8px;" title="รายงาน" onclick="ReportModal.open('${uname}')">🚩</button>
         <button class="btn small" style="width:auto;padding:0 8px;" title="บล็อก" onclick="Friends.block('${uname}')">🚫</button>
@@ -4848,71 +4846,52 @@ const Friends = {
     }).join('');
   },
   sendRequestTo(targetId, targetUsername){
-    if(!ServerAuth.socket || !ServerAuth.socket.connected) return Toast.show('ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์');
-    ServerAuth.socket.emit('friend_add', { targetUsername });
-    Toast.show('📨 ส่งคำขอเป็นเพื่อนถึง '+targetUsername+' แล้ว');
+    if(!this.list.find(f => f.username === targetUsername)) {
+      this.list.push({ id: targetId || Date.now(), username: targetUsername, online: true });
+      this._save();
+      this.render();
+      Toast.show('✅ เพิ่ม '+targetUsername+' เป็นเพื่อนแล้ว (ออฟไลน์โหมด)');
+      document.getElementById('input-friend-search').value = '';
+      this.onSearchInput();
+    } else {
+      Toast.show('เป็นเพื่อนกันอยู่แล้ว');
+    }
   },
-  respond(fromUserId, accept){
-    if(!ServerAuth.socket) return;
-    ServerAuth.socket.emit('friend_respond', { fromUserId, accept });
-  },
+  respond(fromUserId, accept){},
   remove(friendId){
-    if(!ServerAuth.socket) return;
-    ServerAuth.socket.emit('friend_remove', { friendId });
+    this.list = this.list.filter(f => f.id !== friendId);
+    this._save();
+    this.render();
+    Toast.show('ลบเพื่อนแล้ว');
   },
   block(targetUsername){
-    if(!ServerAuth.socket || !ServerAuth.socket.connected) return Toast.show('ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์');
-    ServerAuth.socket.emit('user_block', { targetUsername });
+    this.list = this.list.filter(f => f.username !== targetUsername);
+    if(!this.blocked.find(b => b.username === targetUsername)) {
+      this.blocked.push({ id: Date.now(), username: targetUsername });
+    }
+    this._save();
+    this.render();
+    Toast.show('🚫 บล็อก '+targetUsername+' แล้ว');
   },
   unblock(blockedId){
-    if(!ServerAuth.socket) return;
-    ServerAuth.socket.emit('user_unblock', { blockedId });
+    this.blocked = this.blocked.filter(b => b.id !== blockedId);
+    this._save();
+    this.render();
+    Toast.show('ยกเลิกบล็อกแล้ว');
   },
   invite(friendId){
-    if(!ServerAuth.socket || !ServerAuth.socket.connected) return Toast.show('ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์');
-    if(!Net.peerId){ Toast.show('ระบบ P2P ยังไม่พร้อม รอสักครู่แล้วลองใหม่'); return; }
-    if(!Net.isHost){ Net.isHost = true; Net.hostId = Net.peerId; }
-    ServerAuth.socket.emit('friend_set_peer_id', { peerId: Net.peerId });
-    ServerAuth.socket.emit('party_invite_send', { targetUserId: friendId });
+    Toast.show('ฟีเจอร์เชิญเพื่อนเข้าปาร์ตี้ไม่สามารถใช้ได้ในโหมดออฟไลน์');
   },
-  // ---------- popup แฟนตาซีตอนถูกเชิญ ----------
-  onInviteReceived(d){
-    this.pendingInvite = d;
-    document.getElementById('party-invite-name').textContent = d.fromUsername + ' เชิญท่านเข้าปาร์ตี้';
-    document.getElementById('overlay-party-invite').classList.add('active');
-  },
-  acceptInvite(){
-    const inv = this.pendingInvite;
-    document.getElementById('overlay-party-invite').classList.remove('active');
-    this.pendingInvite = null;
-    if(!inv) return;
-    if(!Net.peer || Net.status!=='ready'){ Toast.show('ระบบเครือข่าย P2P ยังไม่พร้อม ลองกด "เชื่อมต่อใหม่" ในหน้ามัลติเพลเยอร์ก่อน'); return; }
-    Net.isHost = false; Net.hostId = inv.peerId;
-    const conn = Net.peer.connect(inv.peerId);
-    conn.on('open', ()=>{ Net.wireConn(conn); Net.sendTo(inv.peerId, Object.assign({type:'hello'}, Net.myStatPayload())); Toast.show('✨ เข้าร่วมปาร์ตี้ของ '+inv.fromUsername+' แล้ว!'); UI.goto('multiplayer-lobby'); });
-    conn.on('error', err=>Toast.show('เข้าร่วมปาร์ตี้ไม่สำเร็จ: '+(err.type||err.message||'unknown')));
-  },
-  declineInvite(){
-    document.getElementById('overlay-party-invite').classList.remove('active');
-    this.pendingInvite = null;
-  },
+  onInviteReceived(d){},
+  acceptInvite(){},
+  declineInvite(){},
   render(){
     const reqWrap = document.getElementById('friend-requests-wrap');
-    if(reqWrap){
-      reqWrap.innerHTML = this.incoming.length ? ('<p class="small-text" style="margin-top:10px;">คำขอเป็นเพื่อน</p>' +
-        this.incoming.map(r=>`
-        <div class="friend-req-row">
-          <span>${r.username}</span>
-          <div class="factions">
-            <button class="btn small" style="width:auto;padding:0 10px;" onclick="Friends.respond(${r.id}, false)">ปฏิเสธ</button>
-            <button class="btn gold small" style="width:auto;padding:0 10px;" onclick="Friends.respond(${r.id}, true)">ตอบรับ</button>
-          </div>
-        </div>`).join('')) : '';
-    }
+    if(reqWrap) reqWrap.innerHTML = '';
     const listWrap = document.getElementById('friend-list-wrap');
     if(listWrap){
       listWrap.innerHTML = this.list.length ? this.list.map(f=>{
-        const uname = f.username.replace(/'/g,"\\'");
+        const uname = f.username.replace(/'/g,"\\'").replace(/"/g, "&quot;");
         return `
         <div class="friend-row">
           <span class="fname"><span class="friend-dot ${f.online?'on':''}"></span>${f.username}</span>
@@ -4923,7 +4902,7 @@ const Friends = {
             <button class="btn small" style="width:auto;padding:0 10px;" onclick="Friends.remove(${f.id})">✕</button>
           </div>
         </div>`;
-      }).join('') : '<p class="small-text">ยังไม่มีเพื่อน — เพิ่มด้วยชื่อผู้ใช้ด้านบนได้เลย</p>';
+      }).join('') : '<p class="small-text">ยังไม่มีเพื่อน — พิมพ์ชื่อและกดเพิ่มได้เลย (ออฟไลน์โหมด)</p>';
     }
     const blockWrap = document.getElementById('blocked-list-wrap');
     if(blockWrap){
@@ -4940,7 +4919,6 @@ const ReportModal = {
   target: null,
   reasons: ['คำพูดไม่เหมาะสม/หยาบคาย', 'โกง/ใช้บั๊กเอาเปรียบ', 'สแปม', 'ชื่อผู้ใช้ไม่เหมาะสม', 'อื่นๆ'],
   open(targetUsername){
-    if(!ServerAuth.socket || !ServerAuth.socket.connected){ Toast.show('ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์'); return; }
     this.target = targetUsername;
     document.getElementById('report-target-name').textContent = targetUsername;
     document.getElementById('report-details').value = '';
@@ -4951,12 +4929,9 @@ const ReportModal = {
   },
   close(){ document.getElementById('overlay-report-player').classList.remove('active'); this.target = null; },
   submit(){
-    if(!this.target || !ServerAuth.socket) return;
-    const checked = document.querySelector('input[name="report-reason"]:checked');
-    const reason = checked ? checked.value : this.reasons[0];
-    const details = document.getElementById('report-details').value.trim();
-    ServerAuth.socket.emit('user_report', { targetUsername: this.target, reason, details });
+    if(!this.target) return;
     this.close();
+    Toast.show('🚩 ส่งรายงาน (ออฟไลน์โหมด) แล้ว ขอบคุณครับ');
   }
 };
 
