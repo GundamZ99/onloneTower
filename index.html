@@ -1092,31 +1092,6 @@ function weaponIconHtml(ic, weaponId, sizeClass){
 /* ---------------------------------- 0. PWA (static manifest.json + best-effort service worker) ---------------------------------- */
 const PWA = {
   deferredPrompt:null,
-    gainExp(amount) {
-    if(!this.state.player) return;
-    const p = this.state.player;
-    if(p.exp===undefined) p.exp=0;
-    if(p.maxExp===undefined) p.maxExp = (p.level||1)*100;
-    p.exp += amount;
-    let leveledUp = false;
-    let levelsGained = 0;
-    while(p.exp >= p.maxExp) {
-      p.exp -= p.maxExp;
-      p.level = (p.level||1) + 1;
-      p.maxExp = p.level * 100;
-      p.maxHp += 5;
-      p.atk += 1;
-      p.mag += 1;
-      p.luk += 1;
-      p.hp = p.maxHp; // Full heal
-      leveledUp = true;
-      levelsGained++;
-    }
-    if(leveledUp) {
-      LootPopup.push({icHtml:'<div style="font-size:36px">🌟</div>', tag:'LEVEL UP!', name:`เลเวลอัปเป็น Lv.${p.level}!`, msg:`สเตตัสพุ่งทะยาน: HP สูงสุด +${levelsGained*5}, ATK +${levelsGained}, MAG +${levelsGained}, LUK +${levelsGained} และฟื้นฟู HP เต็มหลอด!`});
-    }
-    this.save();
-  },
   init(){
     // ไอคอนและ manifest ตอนนี้เป็นไฟล์จริงแบบ static (server/public/manifest.json +
     // server/public/icons/*.png) แล้ว ไม่ต้อง generate ด้วย canvas/blob URL ที่ตัวอ่าน
@@ -1684,6 +1659,31 @@ function pct(v,max){ return Math.max(0,Math.min(100, v/max*100)); }
 const SAVE_KEY = 'demonTowerSave_v2';
 const Game = {
   state:null,
+  gainExp(amount) {
+    if(!this.state.player) return;
+    const p = this.state.player;
+    if(p.exp===undefined) p.exp=0;
+    if(p.maxExp===undefined) p.maxExp = (p.level||1)*100;
+    p.exp += amount;
+    let leveledUp = false;
+    let levelsGained = 0;
+    while(p.exp >= p.maxExp) {
+      p.exp -= p.maxExp;
+      p.level = (p.level||1) + 1;
+      p.maxExp = p.level * 100;
+      p.maxHp += 5;
+      p.atk += 1;
+      p.mag += 1;
+      p.luk += 1;
+      p.hp = p.maxHp; // Full heal
+      leveledUp = true;
+      levelsGained++;
+    }
+    if(leveledUp) {
+      LootPopup.push({icHtml:'<div style="font-size:36px">🌟</div>', tag:'LEVEL UP!', name:`เลเวลอัปเป็น Lv.${p.level}!`, msg:`สเตตัสพุ่งทะยาน: HP สูงสุด +${levelsGained*5}, ATK +${levelsGained}, MAG +${levelsGained}, LUK +${levelsGained} และฟื้นฟู HP เต็มหลอด!`});
+    }
+    this.save();
+  },
   defaultState(){
     return { player:null, globalWish: JSON.parse(localStorage.getItem('demonTowerWish')||'null'), party:{}, pendingBoss:null };
   },
