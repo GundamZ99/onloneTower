@@ -1092,6 +1092,31 @@ function weaponIconHtml(ic, weaponId, sizeClass){
 /* ---------------------------------- 0. PWA (static manifest.json + best-effort service worker) ---------------------------------- */
 const PWA = {
   deferredPrompt:null,
+    gainExp(amount) {
+    if(!this.state.player) return;
+    const p = this.state.player;
+    if(p.exp===undefined) p.exp=0;
+    if(p.maxExp===undefined) p.maxExp = (p.level||1)*100;
+    p.exp += amount;
+    let leveledUp = false;
+    let levelsGained = 0;
+    while(p.exp >= p.maxExp) {
+      p.exp -= p.maxExp;
+      p.level = (p.level||1) + 1;
+      p.maxExp = p.level * 100;
+      p.maxHp += 5;
+      p.atk += 1;
+      p.mag += 1;
+      p.luk += 1;
+      p.hp = p.maxHp; // Full heal
+      leveledUp = true;
+      levelsGained++;
+    }
+    if(leveledUp) {
+      LootPopup.push({icHtml:'<div style="font-size:36px">🌟</div>', tag:'LEVEL UP!', name:`เลเวลอัปเป็น Lv.${p.level}!`, msg:`สเตตัสพุ่งทะยาน: HP สูงสุด +${levelsGained*5}, ATK +${levelsGained}, MAG +${levelsGained}, LUK +${levelsGained} และฟื้นฟู HP เต็มหลอด!`});
+    }
+    this.save();
+  },
   init(){
     // ไอคอนและ manifest ตอนนี้เป็นไฟล์จริงแบบ static (server/public/manifest.json +
     // server/public/icons/*.png) แล้ว ไม่ต้อง generate ด้วย canvas/blob URL ที่ตัวอ่าน
@@ -1734,7 +1759,7 @@ const Game = {
     const race = RACES[Math.floor(Math.random()*RACES.length)];
     const cls = CLASSES[Math.floor(Math.random()*CLASSES.length)];
     const p = {
-      name, raceId:race.id, classId:cls.id, level:1, floorTraining:1, floorDemon:1,
+      name, raceId:race.id, classId:cls.id, level:1, exp:0, maxExp:100, floorTraining:1, floorDemon:1,
       hp:race.hp, maxHp:race.hp, atk:race.atk, mag:race.mag, luk:race.luk, gold:20,
       deck:[Object.assign({id:'base_'+cls.id}, cls.card)], deckLimit:3, cardStorage:[],
       inventory:[{tplId:'potion_small', qty:2}], equipment:[null,null],
@@ -2459,6 +2484,8 @@ const Render = {
       <h3>${p.name}</h3>
       <div class="hpbar-wrap"><div class="hpbar" style="width:${pct(p.hp,p.maxHp)}%"></div>
         <div class="hpbar-label">${p.hp} / ${p.maxHp} HP</div></div>
+      <div class="hpbar-wrap" style="margin-top:4px;"><div class="hpbar" style="background:#3b82f6; width:${pct(p.exp||0,p.maxExp||100)}%"></div>
+        <div class="hpbar-label">${p.exp||0} / ${p.maxExp||(p.level*100)||100} EXP</div></div>
       <div class="statgrid" style="margin-top:10px;">
         <div class="statbox"><div class="k">ATK</div><div class="v">${p.atk}</div></div>
         <div class="statbox"><div class="k">MAG</div><div class="v">${p.mag}</div></div>
@@ -3297,6 +3324,9 @@ const Combat = {
     if(p._pendingGoldBoost){ goldGain *= 2; p._pendingGoldBoost = false; this._log('sys','💰 ยาเพิ่มลาภทำงาน! ทองคำที่ได้เพิ่มเป็น 2 เท่า'); }
     p.gold += goldGain;
     this._log('sys', `🪙 ได้รับทองคำ ${goldGain}`);
+    const expGain = Math.floor(floor * 5) + 10;
+    Game.gainExp(expGain);
+    this._log('sys', `✨ ได้รับ EXP +${expGain}`);
     p.hp = Math.min(p.maxHp, p.hp + Math.round(p.maxHp*0.1));
 
     if(mode==='training'){
