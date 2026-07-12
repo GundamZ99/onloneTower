@@ -1670,17 +1670,14 @@ const Game = {
     while(p.exp >= p.maxExp) {
       p.exp -= p.maxExp;
       p.level = (p.level||1) + 1;
-      p.maxExp = p.level * 100;
-      p.maxHp += 5;
-      p.atk += 1;
-      p.mag += 1;
-      p.luk += 1;
-      p.hp = p.maxHp; // Full heal
+      p.maxExp = p.level * 100; // EXP requirement scales up with level
+      p.gold += 100; // Give 100 gold instead of stats
+      p.hp = p.maxHp; // Still heal to full
       leveledUp = true;
       levelsGained++;
     }
     if(leveledUp) {
-      LootPopup.push({icHtml:'<div style="font-size:36px">🌟</div>', tag:'LEVEL UP!', name:`เลเวลอัปเป็น Lv.${p.level}!`, msg:`สเตตัสพุ่งทะยาน: HP สูงสุด +${levelsGained*5}, ATK +${levelsGained}, MAG +${levelsGained}, LUK +${levelsGained} และฟื้นฟู HP เต็มหลอด!`});
+      LootPopup.push({icHtml:'<div style="font-size:36px">🌟</div>', tag:'LEVEL UP!', name:`เลเวลอัปเป็น Lv.${p.level}!`, msg:`คุณได้รับทองคำ +${levelsGained*100}🪙 และฟื้นฟู HP จนเต็มหลอด!`});
     }
     this.save();
   },
