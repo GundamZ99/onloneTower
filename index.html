@@ -2286,37 +2286,12 @@ function grantWeapon(weaponId, tier){
   if(!p || !w) return false;
   const isGodly = tier==='godly';
   if(isGodly){
-    const existing = (p.weaponSlot && p.weaponSlot.tier==='godly' && p.weaponSlot.weaponId===weaponId) ? p.weaponSlot
-      : p.inventory.find(it=>it && it.isWeapon && it.tier==='godly' && it.weaponId===weaponId);
-    if(existing){
-      const curAwaken = existing.awaken||1;
-      if(curAwaken>=GODLY_AWAKEN_MAX){
+    const equipped = p.weaponSlot && p.weaponSlot.tier==='godly' && p.weaponSlot.weaponId===weaponId;
+    if(equipped && p.weaponSlot.awaken>=GODLY_AWAKEN_MAX){
         p.gold += 50;
         Game.save();
-        LootPopup.push({icHtml:weaponIconHtml(w.ic, weaponId, 'big'), tag:'🌟 อาวุธเทพ Tier สูงสุด!', name:`${w.name} (${w.nameEn})`, msg:`ปลุกพลังครบ Tier ${GODLY_AWAKEN_MAX} แล้ว — ได้รับทองคำชดเชย 50🪙 แทน`});
+        LootPopup.push({icHtml:weaponIconHtml(w.ic, weaponId, 'big'), tag:'🌟 อาวุธเทพ Tier สูงสุด!', name:`${w.name} (${w.nameEn})`, msg:`สุ่มได้อาวุธที่ปลุกพลังตันแล้ว — ได้รับทองคำชดเชย 50🪙 แทน`});
         return true;
-      }
-      const isEquipped = existing===p.weaponSlot;
-      if(isEquipped && w.statBoost){
-        // Unwind the old (lower-tier) stat boost, then reapply at the new tier so the
-        // player's live stats stay perfectly in sync with the weapon's current tier.
-        const oldBoost = weaponStatBoostFor(existing, w);
-        Object.keys(oldBoost).forEach(k=>{ if(k==='hp'){ p.maxHp-=oldBoost.hp; p.hp=Math.min(p.hp,p.maxHp); } else p[k]-=oldBoost[k]; });
-      }
-      existing.awaken = curAwaken+1;
-      if(isEquipped){
-        if(w.statBoost){
-          const newBoost = weaponStatBoostFor(existing, w);
-          Object.keys(newBoost).forEach(k=>{ if(k==='hp'){ p.maxHp+=newBoost.hp; p.hp+=newBoost.hp; } else p[k]+=newBoost[k]; });
-        }
-        // Ultimate power is derived live from weaponSlot.awaken every render (see
-        // getEquippedWeaponCard) instead of being cached on a separate deck card,
-        // so there's nothing extra to refresh here.
-      }
-      Game.save();
-      LootPopup.push({icHtml:weaponIconHtml(w.ic, weaponId, 'big'), tag:`✨ ปลุกพลังสำเร็จ! Tier ${existing.awaken}`, name:`${w.name} (${w.nameEn})`, msg:`ได้อาวุธเทพชิ้นซ้ำ — ปลุกพลังชิ้นเดิมขึ้นเป็น Tier ${existing.awaken}/${GODLY_AWAKEN_MAX}!`});
-      Toast.show(`✨ ${w.name} ปลุกพลังขึ้นเป็น Tier ${existing.awaken}!`);
-      return true;
     }
   }
   const item = {isWeapon:true, weaponId, tier};
@@ -4084,7 +4059,12 @@ const Inventory = {
         <p class="small-text">${isGodly ? w.passiveDesc : w.desc}</p>
         ${isGodly ? `<p class="small-text"><b>โบนัสสถานะ (Tier ${awaken}):</b> ${statLine}</p>` : ''}
         ${isGodly ? `<div class="divider"></div><p class="small-text"><b>ท่าไม้ตาย (PWR ${getScaledUltimatePower(w,awaken)}):</b> ${w.ultimate.name}<br>${w.ultimate.desc}</p>` : ''}
-        ${isGodly && awaken<GODLY_AWAKEN_MAX ? `<p class="small-text" style="color:var(--gold);">💡 สุ่มอาวุธนี้ซ้ำจากกาชาเพื่อปลุกพลังต่อได้อีก!</p>` : ''}
+        ${isGodly && awaken<GODLY_AWAKEN_MAX ? (()=>{
+          const dupes = Game.state.player.inventory.filter(it=>it&&it.isWeapon&&it.tier==='godly'&&it.weaponId===w.id).length;
+          const canUpgrade = dupes >= 1 && Game.state.player.gold >= 5000;
+          return `<div class="divider"></div><p class="small-text"><b>✨ ตีบวกอาวุธเทพ:</b> ใช้อาวุธเทพชิ้นเดียวกันในกระเป๋า 1 ชิ้น และทอง 5,000🪙<br>(มีวัตถุดิบ ${dupes} ชิ้น, มีทอง ${Game.state.player.gold}🪙)</p>
+          <button class="btn primary" ${!canUpgrade?'disabled':''} onclick="Inventory.upgradeWeaponSlot()">✨ ตีบวกอาวุธ (+1 Tier)</button>`;
+        })() : ''}
         <button class="btn primary" onclick="Inventory.equipWeapon(${i})">⚔️ สวมใส่อาวุธนี้</button>
         <button class="btn" onclick="Inventory.drop(${i})">🗑️ ทิ้ง</button>
       </div>`;
@@ -4106,7 +4086,12 @@ const Inventory = {
         <p class="small-text">${isGodly ? w.passiveDesc : w.desc}</p>
         ${isGodly ? `<p class="small-text"><b>โบนัสสถานะ (Tier ${awaken}):</b> ${statLine}</p>` : ''}
         ${isGodly ? `<div class="divider"></div><p class="small-text"><b>ท่าไม้ตาย (PWR ${getScaledUltimatePower(w,awaken)}):</b> ${w.ultimate.name}<br>${w.ultimate.desc}</p>` : ''}
-        ${isGodly && awaken<GODLY_AWAKEN_MAX ? `<p class="small-text" style="color:var(--gold);">💡 สุ่มอาวุธนี้ซ้ำจากกาชาเพื่อปลุกพลังต่อได้อีก!</p>` : ''}
+        ${isGodly && awaken<GODLY_AWAKEN_MAX ? (()=>{
+          const dupes = Game.state.player.inventory.filter(it=>it&&it.isWeapon&&it.tier==='godly'&&it.weaponId===w.id).length;
+          const canUpgrade = dupes >= 1 && Game.state.player.gold >= 5000;
+          return `<div class="divider"></div><p class="small-text"><b>✨ ตีบวกอาวุธเทพ:</b> ใช้อาวุธเทพชิ้นเดียวกันในกระเป๋า 1 ชิ้น และทอง 5,000🪙<br>(มีวัตถุดิบ ${dupes} ชิ้น, มีทอง ${Game.state.player.gold}🪙)</p>
+          <button class="btn primary" ${!canUpgrade?'disabled':''} onclick="Inventory.upgradeWeaponSlot()">✨ ตีบวกอาวุธ (+1 Tier)</button>`;
+        })() : ''}
         <button class="btn" onclick="Inventory.unequipWeapon()">📦 ถอดเก็บเข้ากระเป๋า</button>
       </div>`;
     UI.goto('weapon-detail');
@@ -4135,6 +4120,39 @@ const Inventory = {
     Toast.show(`⚔️ สวมใส่ "${newW.name}" แล้ว!`);
     UI.goto('inventory-screen');
   },
+    upgradeWeaponSlot(){
+    const p = Game.state.player; if(!p.weaponSlot || p.weaponSlot.tier!=='godly') return;
+    const w = getWeaponData(p.weaponSlot.tier, p.weaponSlot.weaponId); if(!w) return;
+    if(p.weaponSlot.awaken >= GODLY_AWAKEN_MAX){ Toast.show('ถึงระดับสูงสุดแล้ว!'); return; }
+    
+    if(p.gold < 5000){ Toast.show('ทองไม่พอตีบวก (ต้องใช้ 5,000)'); return; }
+    const dupeIdx = p.inventory.findIndex(it=>it&&it.isWeapon&&it.tier==='godly'&&it.weaponId===p.weaponSlot.weaponId);
+    if(dupeIdx < 0){ Toast.show('ไม่มีวัตถุดิบ (อาวุธเทพชิ้นเดียวกัน) ในกระเป๋า'); return; }
+    
+    // Deduct
+    p.gold -= 5000;
+    p.inventory.splice(dupeIdx, 1);
+    
+    // Unwind old stat boost
+    if(w.statBoost){
+      const oldBoost = weaponStatBoostFor(p.weaponSlot, w);
+      Object.keys(oldBoost).forEach(k=>{ if(k==='hp'){ p.maxHp-=oldBoost.hp; p.hp=Math.min(p.hp,p.maxHp); } else p[k]-=oldBoost[k]; });
+    }
+    
+    // Awaken +1
+    p.weaponSlot.awaken = (p.weaponSlot.awaken||1) + 1;
+    
+    // Apply new stat boost
+    if(w.statBoost){
+      const newBoost = weaponStatBoostFor(p.weaponSlot, w);
+      Object.keys(newBoost).forEach(k=>{ if(k==='hp'){ p.maxHp+=newBoost.hp; p.hp+=newBoost.hp; } else p[k]+=newBoost[k]; });
+    }
+    
+    Game.save();
+    Toast.show(`✨ ตีบวกสำเร็จ! ${w.name} ขึ้นเป็น Tier ${p.weaponSlot.awaken}`);
+    this.openWeaponSlotDetail();
+  },
+
   unequipWeapon(){
     const p = Game.state.player; if(!p.weaponSlot) return;
     if(p.inventory.length>=BAG_LIMIT){ Toast.show('กระเป๋าเต็ม ถอดไม่ได้'); return; }
